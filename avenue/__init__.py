@@ -44,22 +44,23 @@ def ensure_executable(bin):
 
 dict_envs = {
     "Circuit" : {
-        "host_ids" : {'linux': '1ukQvaRhYRO4OyH8oKWKiH7fIu7ft7_Wk'},
+        "host_ids" : {'linux': '1wFjAo5CZNgZ7k6v5MIIhKAdfd6wQkNV4'},
         "visual": False,
         "asset_name": 'circuit'
     },
     "CircuitSegmentation": {
-        "host_ids": {'linux': '1ukQvaRhYRO4OyH8oKWKiH7fIu7ft7_Wk'},
+        "host_ids": {'linux': '1j3pNrNNKSgGWl7dkVEm-QzJSyopMr5Zl'},
         "visual": True,
         "asset_name": 'circuit_segmentation'
     },
     "DatasetCollection": {
-        "host_ids": {'linux': '1ukQvaRhYRO4OyH8oKWKiH7fIu7ft7_Wk'},
+        "host_ids": {'linux': '1aqsiVIT4UotdklPN-WYJ4CkILCTj6MOp'},
         "visual": True,
         "asset_name": 'dataset_collection'
     }
 }
-def make(env_name, seed = 0):
+
+def make(env_name):
     seed = random.randint(1, 20000)
     asset_name = dict_envs[env_name]["asset_name"]
     system = platform.system().lower()
