@@ -1,7 +1,6 @@
 # Avenue - Simulator
 
 ## Installation
-
 ```bash
 # install gdown for downloading assets automatically from google drive
 pip install gdown
@@ -10,7 +9,7 @@ pip install gdown
 pip install 'git+https://github.com/Unity-Technologies/ml-agents.git#egg=python&subdirectory=python'
 
 # install avenue
-Assets will be downloaded when a specific environment is used.
+pip install avenue
 ```
 ## Run
 
