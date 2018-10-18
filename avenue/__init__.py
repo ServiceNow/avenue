@@ -19,12 +19,12 @@ def asset_path(asset_id):
     return path
 
 
-def download_assets(self, path):
+def download_assets(path, env_info):
     print('downloading', path + '.zip')
     system = platform.system().lower()
-    if system not in self.host_ids:
-        raise KeyError("There are no assets available for {} on {}".format(self.asset_name, system))
-    id = self.host_ids[system]
+    if system not in env_info["host_ids"]:
+        raise KeyError("There are no assets available for {} on {}".format(env_info["asset_name"], system))
+    id = env_info["host_ids"][system]
     gdown.download("https://drive.google.com/uc?id="+id, path + ".zip", False)
     zip_ref = zipfile.ZipFile(path + '.zip', 'r')
     print('unpacking ...')
@@ -67,9 +67,8 @@ def make(env_name):
     if(asset_name is not None):
         id_asset = asset_id(asset_name, platform.system())
         path_asset = asset_path(id_asset)
-        print(path_asset)
         if not os.path.isdir(path_asset):
-            download_assets(path_asset)
+            download_assets(path_asset, dict_envs[env_name])
     else:
         raise KeyError("There are no assets available for {} on {}".format(asset_name, system))
 
