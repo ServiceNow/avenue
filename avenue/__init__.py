@@ -44,7 +44,7 @@ def ensure_executable(bin):
 
 dict_envs = {
     "Circuit" : {
-        "host_ids" : {'linux': '1wFjAo5CZNgZ7k6v5MIIhKAdfd6wQkNV4'},
+        "host_ids" : {'linux': '1t0Uy29qUteBUzot2pfEyXKWWnrBAJRN-'},
         "visual": False,
         "asset_name": 'circuit'
     },
