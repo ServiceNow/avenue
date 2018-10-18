@@ -18,7 +18,6 @@ def asset_path(asset_id):
     path = os.path.join(dir, asset_id)
     return path
 
-
 def download_assets(path, env_info):
     print('downloading', path + '.zip')
     system = platform.system().lower()

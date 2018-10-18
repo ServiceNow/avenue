@@ -11,29 +11,11 @@ setup(name='avenue',
       zip_safe=False,
       install_requires=[
             "gym_unity",
-            "gdown",
-            "Pillow>=4.2.1",
-            "matplotlib",
-            "numpy>=1.11.0",
-            "jupyter",
-            "pytest>=3.2.2",
-            "docopt",
-            "pyyaml",
-            "protobuf==3.6.0",
-            "grpcio==1.11.0"
+            "gdown"
       ],
       setup_requires=[
           "gym_unity",
-          "gdown",
-          "Pillow>=4.2.1",
-          "matplotlib",
-          "numpy>=1.11.0",
-          "jupyter",
-          "pytest>=3.2.2",
-          "docopt",
-          "pyyaml",
-          "protobuf==3.6.0",
-          "grpcio==1.11.0"
+          "gdown"
       ],
       extras_require={},
       dependency_links=['https://github.com/Unity-Technologies/ml-agents.git#egg=package-1.0'],
