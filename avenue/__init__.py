@@ -48,12 +48,12 @@ dict_envs = {
         "asset_name": 'circuit'
     },
     "CircuitSegmentation": {
-        "host_ids": {'linux': '1j3pNrNNKSgGWl7dkVEm-QzJSyopMr5Zl'},
+        "host_ids": {'linux': '1hjB1OimKrkEzOHBAQTOI6syzi-UT_GH9'},
         "visual": True,
         "asset_name": 'circuit_segmentation'
     },
     "DatasetCollection": {
-        "host_ids": {'linux': '1aqsiVIT4UotdklPN-WYJ4CkILCTj6MOp'},
+        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl'},
         "visual": True,
         "asset_name": 'dataset_collection'
     }

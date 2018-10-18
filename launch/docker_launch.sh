@@ -1,0 +1,2 @@
+USER=cyril
+docker run --rm -ti -u `id -u $USER` -v /tmp/cowbow-X11-unix:/tmp/.X11-unix -v /mnt/home/$USER:/home/$USER --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --device=/dev/nvidia4 --volume-driver=nvidia-docker --volume=nvidia_driver_390.30:/usr/local/nvidia:ro -e LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/nvidia/lib -e DISPLAY=:0 -e HOME=/home/$USER avenue bash
