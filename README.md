@@ -1,23 +1,19 @@
 # Avenue - Simulator
+![Alt text](images/avenue.png?raw=true "Title")
 
 ## Installation
 ```bash
-# install gdown for downloading assets automatically from google drive
-pip install gdown
-
-# install unity ml agents
-pip install 'git+https://github.com/Unity-Technologies/ml-agents.git#egg=python&subdirectory=python'
-
 # install avenue
-pip install avenue
+pip install 'git+https://github.com/cyrilibrahim/Avenue.git'
 ```
-## Run
+## Run example
 
 ```python
 import avenue
 env = avenue.make("Circuit")
 state = env.reset()
-state, reward, done, info = env.step([0, 0, 0])
+for i in range(0, 1000):
+    state, reward, done, info = env.step(env.action_space.sample())
 ```
 
 ## Available environments

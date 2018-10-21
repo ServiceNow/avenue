@@ -10,3 +10,5 @@ RUN git clone https://github.com/glfw/glfw.git && cd glfw && mkdir build && cd b
 RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
 	python3 get-pip.py && \
 	rm get-pip.py
+
+
