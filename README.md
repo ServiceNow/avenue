@@ -41,9 +41,9 @@ The 3 actions have a range between -1 and 1.
 #### *Circuit segmentation*
 ``` env = env.make("CircuitSegmentation") ```
 
-#### Description of the environment
+##### Description of the environment
 The car must drive on a circuit as fast as possible with going out the track.
-#### State
+##### State
 Semantic segmentation of the track of size 84 by 84. 
 
 #### *Circuit*
