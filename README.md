@@ -1,6 +1,6 @@
 # AVENUE Simulator
 
-AVENUE Simulator is a simulator based on Unity 3D game engine designed to test reinforcment learning algorithm, imitation learning and to collect data.
+AVENUE Simulator is a simulator based on Unity 3D game engine designed to test reinforcement learning algorithm, imitation learning and to collect data.
 ![Alt text](images/AVENUE.jpg?raw=true "Title")
 
 ## Installation
@@ -66,7 +66,7 @@ State of size 13 that contains:
 ``` env = env.make("DatasetCollector") ```
 #### *Dataset collector*
 ##### Description of the environment
-This environment come with an autopilot and doesn't need reinforcment learning. There's a 
+This environment come with an autopilot and doesn't need reinforcement learning. There's a 
 step to do every 500 simulations step (to get diverse images) where you can collect the data. The action space is of size 0. 
 
 There's a special repository to collect and read data efficiently here: 
@@ -78,7 +78,7 @@ TODO
 
 ## Usage
 
-### Reinforcment learning baselines
+### Reinforcement learning baselines
 
 TODO
 

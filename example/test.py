@@ -1,7 +1,7 @@
 import avenue
 
-env = avenue.make("Circuit")
+env = avenue.make("CircuitVisual")
 env.reset()
 
 for i in range(0, 1000):
-    env.step(env.action_space.sample())
+    ob, _, _, _ = env.step(env.action_space.sample())
