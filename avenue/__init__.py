@@ -103,7 +103,7 @@ dict_envs = {
         "asset_name": 'circuit_visual'
     },
     "RaceAgainstTime": {
-        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl'},
+        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl', 'darwin':'15Z21R9RlaQGN1jv-ipZSoN5PJYjNS3DB'},
         "visual": True,
         "asset_name": 'race_against_time'
     }
