@@ -4,9 +4,6 @@ import platform
 import zipfile
 import gdown
 import random
-import gym
-import numpy as np
-from gym import spaces
 from wrappers import ConcatVisualUnity
 
 
