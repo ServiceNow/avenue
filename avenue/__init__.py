@@ -7,8 +7,8 @@ import random
 import gym
 import numpy as np
 from collections import deque
+from gym import spaces
 
-#from wrappers import ConcatVisualUnity
 class ConcatVisualUnity(gym.Wrapper):
     def __init__(self, env):
         gym.Wrapper.__init__(self, env)
@@ -47,9 +47,9 @@ class VideoSaver(gym.Wrapper):
         ob = self.env.reset()
         return ob
 
-    def save_video(self, path = "/tmp/gif_avenue.gif"):
+    def save_video(self, path="/tmp/gif_avenue.gif"):
         imageio.mimsave(path, self.video_buffer)
-        os.chmod('/tmp/gif_avenue.gif', 0o777)
+        os.chmod(path, 0o777)
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
@@ -83,6 +83,7 @@ def download_assets(path, env_info):
     zip_ref.close()
     assert os.path.isdir(path)
     os.remove(path + '.zip')
+    print("Unpacked !")
 
 def ensure_executable(bin):
     if platform.system().lower() not in ('linux', 'darwin'):
@@ -116,17 +117,17 @@ dict_envs = {
         "asset_name": 'dataset_collection'
     },
     "CircuitVisual": {
-        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl'},
+        "host_ids": {'linux': '175-NVmuqQawlubyMd_1eT6qigIa0RNBi'},
         "visual": True,
         "asset_name": 'circuit_visual'
     },
     "RaceAgainstTime": {
-        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl', 'darwin':'15Z21R9RlaQGN1jv-ipZSoN5PJYjNS3DB'},
+        "host_ids": {'linux': '1dmPPK4mFTnYPnatpSWIme0QmYSvFR9l-', 'darwin':'15Z21R9RlaQGN1jv-ipZSoN5PJYjNS3DB'},
         "visual": True,
         "asset_name": 'race_against_time'
     },
     "RaceAgainstTimeSolo": {
-        "host_ids": {'linux': '1WE--vDGYKYMBYPsuCqJJehTKHCIx8zgl', 'darwin': '15Z21R9RlaQGN1jv-ipZSoN5PJYjNS3DB'},
+        "host_ids": {'linux': '1imEoe9CWyij9fIQwQwHEVdspDWDEHjNH'},
         "visual": True,
         "asset_name": 'race_against_time_solo'
     }
@@ -145,8 +146,8 @@ def make(env_name):
         raise KeyError("There are no assets available for {} on {}".format(asset_name, system))
 
     bin = os.path.join(path_asset, id_asset)
-    ensure_executable(bin)
-    if(env_name != "CircuitVisual"):
-        return VideoSaver(UnityEnv(environment_filename=bin,worker_id=seed, use_visual=dict_envs[env_name]["visual"]))
-    else:
-        return ConcatVisualUnity(UnityEnv(environment_filename=bin,worker_id=seed, use_visual=dict_envs[env_name]["visual"]))
+    env = UnityEnv(environment_filename=bin,worker_id=seed, use_visual=dict_envs[env_name]["visual"])
+    if dict_envs[env_name]["visual"]:
+        env = VideoSaver(env)
+        env = ConcatVisualUnity(env)
+    return env
