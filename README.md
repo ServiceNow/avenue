@@ -22,7 +22,15 @@ for i in range(0, 1000):
 
 #### Default reward
 
-TODO
+Negative y projection of the velocity of the car on the road + positive x projection of the velocity of the car on the 
+road (Both normalized between -1 and 1).
+
+-1 if the car touch a pedestrian or a car.
+
+-0.01 per step if the car touch the sidewalk.
+
+-0.05 per step if the car move at a red light.
+
 
 ### Continuous states environments
 
@@ -38,13 +46,15 @@ explore the action space fastly.
 The 3 actions have a range between -1 and 1.  
  
 
-#### *Circuit segmentation*
-``` env = env.make("CircuitSegmentation") ```
+#### *Circuit Visual (segmentation + depth)*
+``` env = env.make("CircuitVisual") ```
 
 ##### Description of the environment
 The car must drive on a circuit as fast as possible with going out the track.
 ##### State
 Semantic segmentation of the track of size 84 by 84. 
+##### Example
+![Alt text](example/CircuitVisual.gif?raw=true "Title")
 
 #### *Circuit*
 ``` env = env.make("Circuit") ```
@@ -61,6 +71,29 @@ State of size 13 that contains:
     <li>current speed normalized between -1 and 1 [0, max speed].</li>
  </ul>
 
+##### Example
+
+![Alt text](example/CircuitSegmentation.gif?raw=true "Title")
+
+#### *RaceAgainstTime*
+``` env = env.make("RaceAgainstTime") ```
+##### Description of the environment
+On road with bird view segmentation and traffic on the road.
+##### State
+Camera segmentation of size 160 x 210.
+##### Example
+
+![Alt text](example/RaceAgainstTime.gif?raw=true "Title")
+
+#### *RaceAgainstTime*
+``` env = env.make("RaceAgainstTimeSolo") ```
+##### Description of the environment
+Same as RaceAgainstTime without traffic.
+##### State
+Camera segmentation of size 160 x 210.
+##### Example
+
+![Alt text](example/RaceAgainstTimeSolo.gif?raw=true "Title")
 
 ### Special environments
 ``` env = env.make("DatasetCollector") ```
@@ -72,7 +105,15 @@ step to do every 500 simulations step (to get diverse images) where you can coll
 There's a special repository to collect and read data efficiently here: 
 TODO
 
+##### Example
+
+![Alt text](example/DatasetCollection.gif?raw=true "Title")
+
+
 ## Run on Docker
+
+``` nvidia-docker run --rm -ti -v /tmp/cowbow-X11-unix:/tmp/.X11-unix -v /mnt/home/$USER:/home/$USER --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools --device=/dev/nvidia4 --volume-driver=nvidia-docker --volume=nvidia_driver_390.30:/usr/local/nvidia:ro -e LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/nvidia/lib -e DISPLAY=:0 -e HOME=/home/$USER avenue bash```
+
 
 ## Run on Borgy (Element AI)
 

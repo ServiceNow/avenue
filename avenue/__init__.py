@@ -148,6 +148,6 @@ def make(env_name):
     bin = os.path.join(path_asset, id_asset)
     env = UnityEnv(environment_filename=bin,worker_id=seed, use_visual=dict_envs[env_name]["visual"])
     if dict_envs[env_name]["visual"]:
-        env = VideoSaver(env)
         env = ConcatVisualUnity(env)
+        env = VideoSaver(env)
     return env
