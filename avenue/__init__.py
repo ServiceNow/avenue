@@ -94,7 +94,7 @@ def ensure_executable(bin):
         for ext in ['x86_64']:
             filename = bin + '.' + ext
             st = os.stat(filename)
-            #os.chmod(filename, st.st_mode | stat.S_IEXEC)
+            os.chmod(filename, st.st_mode | stat.S_IEXEC)
     elif system == 'darwin':
         for ext in ['app']:
             filename = bin + '.' + ext

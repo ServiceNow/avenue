@@ -52,7 +52,7 @@ The 3 actions have a range between -1 and 1.
 ##### Description of the environment
 The car must drive on a circuit as fast as possible with going out the track.
 ##### State
-Semantic segmentation of the track of size 84 by 84. 
+Semantic segmentation and depth map of size 84 by 84. 
 ##### Example
 ![Alt text](example/CircuitVisual.gif?raw=true "Title")
 
@@ -80,7 +80,7 @@ State of size 13 that contains:
 ##### Description of the environment
 On road with bird view segmentation and traffic on the road.
 ##### State
-Camera segmentation of size 160 x 210.
+Camera segmentation of size 210 x 160.
 ##### Example
 
 ![Alt text](example/RaceAgainstTime.gif?raw=true "Title")
@@ -90,7 +90,7 @@ Camera segmentation of size 160 x 210.
 ##### Description of the environment
 Same as RaceAgainstTime without traffic.
 ##### State
-Camera segmentation of size 160 x 210.
+Camera segmentation of size 210 x 160.
 ##### Example
 
 ![Alt text](example/RaceAgainstTimeSolo.gif?raw=true "Title")
