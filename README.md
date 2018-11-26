@@ -56,6 +56,16 @@ Semantic segmentation and depth map of size 84 by 84.
 ##### Example
 ![Alt text](example/CircuitVisual.gif?raw=true "Title")
 
+#### *Circuit Rgb*
+``` env = env.make("CircuitRgb") ```
+
+##### Description of the environment
+The car must drive on a circuit as fast as possible with going out the track.
+##### State
+RGB(grayscale) of size 128 by 256. 
+##### Example
+![Alt text](example/CircuitRgb.gif?raw=true "Title")
+
 #### *Circuit*
 ``` env = env.make("Circuit") ```
 ##### Description of the environment

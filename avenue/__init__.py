@@ -23,7 +23,7 @@ class ConcatVisualUnity(gym.Wrapper):
                 nb_channel += 3
 
         shp = env.observation_space.shape
-        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], nb_channel), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], nb_channel))
 
     def reset(self):
         ob = self.env.reset()
@@ -94,7 +94,7 @@ def ensure_executable(bin):
         for ext in ['x86_64']:
             filename = bin + '.' + ext
             st = os.stat(filename)
-            os.chmod(filename, st.st_mode | stat.S_IEXEC)
+            os.chmod(filename, 0o777)
     elif system == 'darwin':
         for ext in ['app']:
             filename = bin + '.' + ext
@@ -130,6 +130,11 @@ dict_envs = {
         "host_ids": {'linux': '1imEoe9CWyij9fIQwQwHEVdspDWDEHjNH'},
         "visual": True,
         "asset_name": 'race_against_time_solo'
+    },
+    "CircuitRgb": {
+        "host_ids": {'linux': '1UZ-Wv-yFBhjlr-mNEECDUXwrnwOEEjt0'},
+        "visual": True,
+        "asset_name": 'circuit_rgb'
     }
 }
 
