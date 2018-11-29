@@ -89,16 +89,10 @@ def ensure_executable(bin):
     if platform.system().lower() not in ('linux', 'darwin'):
         return
     import stat
-    system = platform.system().lower()
-    if system == 'linux':
-        for ext in ['x86_64']:
+    for ext in ['x86', 'x86_64']:
             filename = bin + '.' + ext
             st = os.stat(filename)
-            os.chmod(filename, 0o777)
-    elif system == 'darwin':
-        for ext in ['app']:
-            filename = bin + '.' + ext
-            st = os.stat(filename)
+            os.chmod(filename, st.st_mode | stat.S_IEXEC)
 
 dict_envs = {
     "Circuit" : {
@@ -151,8 +145,9 @@ def make(env_name):
         raise KeyError("There are no assets available for {} on {}".format(asset_name, system))
 
     bin = os.path.join(path_asset, id_asset)
+    ensure_executable(bin)
     env = UnityEnv(environment_filename=bin,worker_id=seed, use_visual=dict_envs[env_name]["visual"])
-    if dict_envs[env_name]["visual"]:
-        env = ConcatVisualUnity(env)
-        env = VideoSaver(env)
+    # if dict_envs[env_name]["visual"]:
+    #     env = ConcatVisualUnity(env)
+        # env = VideoSaver(env)
     return env
