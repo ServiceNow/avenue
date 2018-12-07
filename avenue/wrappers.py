@@ -2,17 +2,46 @@ import gym
 from gym import spaces
 from collections import deque
 import numpy as np
-from gym.wrappers import TimeLimit
 
 
-class DifferentialActions(gym.Wrapper):
-    old_action = None
-    alpha = 0.1
+class DifferentialActions(gym.ObservationWrapper):
+    action = None
     
+    def __init__(self, env, alpha=0.2):
+        super().__init__(env)
+        self.alpha = alpha
+        low = np.array((*env.observation_space.low, *env.action_space.low))
+        high = np.array((*env.observation_space.high, *env.action_space.high))
+        self.observation_space = spaces.Box(low, high, dtype=np.float32)
+
+    def observation(self, m):
+        return np.concatenate((m, self.action))
+
+    def reset(self):
+        self.action = np.zeros(self.action_space.shape, np.float32)
+        return super().reset()
+
     def step(self, action):
-        da = self.alpha * action
-        self.old_action = da if self.old_action is None else (1-self.alpha) * self.old_action + da
-        return self.env.step(self.old_action)
+        da = self.alpha * np.asarray(action, dtype=np.float32)
+        # self.action = (1-self.alpha) * self.action + da
+        action = self.action + da
+        self.action = np.clip(action, -1, 1)
+        return super().step(self.action)
+
+class DifferentialActionsVisual(DifferentialActions):
+    def __init__(self, env, alpha=0.2):
+        self.alpha = alpha
+        super(gym.ObservationWrapper, self).__init__(env)
+        vsp = self.env.observation_space.spaces['vector']
+        low = np.array((*vsp.low, *env.action_space.low))
+        high = np.array((*vsp.high, *env.action_space.high))
+        self.observation_space = spaces.Dict(dict(
+            self.env.observation_space.spaces,
+            vector=spaces.Box(low, high, dtype=np.float32)
+        ))
+
+    def observation(self, m):
+        return dict(m, vector=np.concatenate((m['vector'], self.action)))
 
 
 class ConcatVisualUnity(gym.Wrapper):
