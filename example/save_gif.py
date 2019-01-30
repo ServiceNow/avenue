@@ -1,11 +1,16 @@
 import avenue
+from avenue.wrappers import VideoSaver
+env = avenue.make("ScenarioZoom")
 
-env = avenue.make("CircuitRgb")
+env = VideoSaver(env)
+
 env.reset()
+
 done = False
 
-while not done:
+
+for i in range(0, 500):
     _, _, done, _ = env.step(env.action_space.sample())
 
 
-env.save_video("CircuitRgb" + ".gif")
+env.save_video("ScenarioZoom" + ".gif")

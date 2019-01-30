@@ -99,7 +99,7 @@ class AvenueEnv(UnityEnv):
 
     def reset(self, **kwargs):
         _ = self.env.reset()
-        m, _, _, _ = self.step([0., 0., 0.])  # we need to step to get info
+        m, _, _, _ = self.step(self.action_space.sample())  # we need to step to get info
         return m
 
     def step(self, a):
@@ -168,7 +168,7 @@ class AvenueEnv(UnityEnv):
         return r
 
 
-class VisualAvenueEnv(AvenueEnv):
+class AllStatesAvenueEnv(AvenueEnv):
     def __init__(self):
         super().__init__()
         self.observation_space = spaces.Dict(dict(
@@ -186,3 +186,13 @@ class VisualAvenueEnv(AvenueEnv):
         return m, r, d, info
 
 
+class VisualAvenueEnv(AvenueEnv):
+    def __init__(self):
+        super().__init__()
+        self.observation_space = spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
+
+    def step(self, a):
+        _ , r, d, info = super().step(a)
+        (vis_obs,), = info['brain_info'].visual_observations
+        vis_obs = (255 * vis_obs).astype(np.uint8)
+        return vis_obs, r, d, info

@@ -49,6 +49,3 @@ ENV AVENUE_ASSETS=/tmp/avenue_assets
 RUN chmod -R 777 /tmp/avenue_assets
 
 RUN pip install comet_ml
-
-RUN pip install pyro-ppl
-RUN pip install imageio

@@ -2,11 +2,11 @@ import gym
 from gym import spaces
 from collections import deque
 import numpy as np
-
+import os
 
 class DifferentialActions(gym.ObservationWrapper):
     action = None
-    
+
     def __init__(self, env, alpha=0.2):
         super().__init__(env)
         self.alpha = alpha
@@ -73,7 +73,7 @@ class ConcatVisualUnity(gym.Wrapper):
 class VideoSaver(gym.Wrapper):
     def __init__(self, env):
         gym.Wrapper.__init__(self, env)
-        self._env = self.env._env
+        self._env = self.env
         self.video_buffer = deque(maxlen=10000)
 
     def reset(self):
