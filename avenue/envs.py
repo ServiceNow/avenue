@@ -1,4 +1,4 @@
-from .env import AvenueEnv, VisualAvenueEnv, UnityEnv
+from .env import AvenueEnv, VisualAvenueEnv, UnityEnv, AllStatesAvenueEnv
 from .wrappers import DifferentialActions, DifferentialActionsVisual
 from gym.wrappers import TimeLimit
 
@@ -38,10 +38,11 @@ class CircuitRgb(VisualAvenueEnv):
     asset_name = 'circuit_rgb'
 
 
-class ScenarioZoom(VisualAvenueEnv):
+class ScenarioZoom(AllStatesAvenueEnv):
     host_ids = {'linux': '16ppvjY8xT7p5R-bVGe6OtNle6rLW8PuN'}
     visual = True
     asset_name = 'scenario_zoom'
+    vector_state_class = "AvenueStateZoom"
 
 def Circuit_v1():
     env = Circuit()

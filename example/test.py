@@ -1,6 +1,6 @@
 import avenue
 
-env = avenue.make("ScenarioZoom")
+env = avenue.make("CircuitSegmentation")
 env.reset()
 
 for i in range(0, 1000):

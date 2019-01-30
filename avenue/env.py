@@ -11,15 +11,65 @@ from numpy.linalg import norm
 from .util import ensure_executable, namedtuple
 
 
+class AvenueState(namedtuple):
+    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
+    waypoint_1 = 2
+    waypoint_2 = 2
+    waypoint_3 = 2
+    waypoint_4 = 2
+    velocity_magnitude = 1
+    angle_to_next_waypoint_in_degrees = 1
+    velocity = 3
+    top_speed = 1
+    ground_col = 1
+    collide_car = 1
+    collide_pedestrian = 1
+    position = 3
+    forward = 3
+    closest_waypoint = 3
+    horizontal_force = 1
+    vertical_force = 0
+
+
+class AvenueStateZoom(namedtuple):
+    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
+    waypoint_1 = 2
+    waypoint_2 = 2
+    waypoint_3 = 2
+    waypoint_4 = 2
+    velocity_magnitude = 1
+    angle_to_next_waypoint_in_degrees = 1
+    velocity = 3
+    top_speed = 1
+    ground_col = 1
+    collide_car = 1
+    collide_pedestrian = 1
+    position = 3
+    forward = 3
+    closest_waypoint = 3
+    horizontal_force = 1
+    vertical_force = 1
+    object_distance = 1
+    object_class = 1
+
+
 class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool
     asset_name: str
+    vector_state_class: str = "AvenueState"
+    overwrite_reward: bool = True
 
     def __init__(self):
+
+        if self.vector_state_class is None:
+            self.vector_state_class = AvenueState
+
         seed = random.randint(10000, 20000)
         system = platform.system().lower()
-        if(self.asset_name is not None):
+
+        if self.asset_name is not None:
+
             id_asset = asset_id(self.asset_name, platform.system())
             path_asset = asset_path(id_asset)
             if not os.path.isdir(path_asset):
@@ -67,25 +117,6 @@ def asset_path(asset_id):
     path = os.path.join(dir, asset_id)
     return path
 
-
-class AvenueState(namedtuple):
-    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
-    waypoint_1 = 2
-    waypoint_2 = 2
-    waypoint_3 = 2
-    waypoint_4 = 2
-    velocity_magnitude = 1
-    angle_to_next_waypoint_in_degrees = 1
-    velocity = 3
-    top_speed = 1
-    ground_col = 1
-    collide_car = 1 
-    collide_pedestrian = 1
-    position = 3
-    forward = 3
-    closest_waypoint = 3
-
-
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -93,7 +124,7 @@ def sigmoid(x):
 class AvenueEnv(UnityEnv):
     def __init__(self):
         super().__init__()
-        state_dims = AvenueState()
+        state_dims = globals()[ self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
         self.observation_space = spaces.Box(-1, 1, (sum(state_dims),), np.float32)
 
@@ -112,19 +143,22 @@ class AvenueEnv(UnityEnv):
         vec_obs, = info['brain_info'].vector_observations
         vec_obs = np.asarray(vec_obs, dtype=np.float32)
 
-        state = AvenueState(*np.split(vec_obs, self.state_idx))
-        reward = self.compute_reward(state)
+        state = globals()[ self.vector_state_class](*np.split(vec_obs, self.state_idx))
+
+        if self.overwrite_reward:
+            reward = self.compute_reward(state)
+        else:
+            reward = r
         # reward = r
         # done = self.compute_terminal(state)
         done = d
         info = dict(info, reset=False, avenue_state=state)  # reset=False, i.e. all dones are true terminals
         return vec_obs, reward, done, info
 
-
-    def compute_terminal(self, s: AvenueState):
+    def compute_terminal(self, s):
         return s.collide_car or s.collide_pedestrian  # TODO: what else?
 
-    def compute_reward(self, s: AvenueState):
+    def compute_reward(self, s):
         """ Partially inspired by https://yanpanlau.github.io/2016/10/11/Torcs-Keras.html
         """
         theta = s.angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi
@@ -178,8 +212,7 @@ class AllStatesAvenueEnv(AvenueEnv):
 
     def step(self, a):
         _ , r, d, info = super().step(a)
-        s: AvenueState = info['avenue_state']
-
+        s = globals()[ self.vector_state_class](info['avenue_state'])
         (vis_obs,), = info['brain_info'].visual_observations
         vis_obs = (255 * vis_obs).astype(np.uint8)
         m = dict(vector=s.velocity_magnitude / s.top_speed, visual=vis_obs)
