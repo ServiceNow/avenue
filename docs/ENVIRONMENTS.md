@@ -67,8 +67,11 @@ All the environment have access to the following vector state, but some of them 
 |closest_waypoint                 |Closest waypoint of the car position (X, Y, Z).|  3   |
 |horizontal_force                 |Current horizontal force applied (normalized steering angle).|  1   |
 |vertical_force                   |Current vertical force applied (normalized acceleration).|  1   |
+
+
 N.B: The closest waypoint and waypoint_0, waypoint_0 is the next targeted waypoint, and closest waypoint is the one
 with the minimum distance in space.
+
 ##### How to acces this state ?
 
 In all the case you can access these informations for each state as a dictionary in the *info* variable, for example:
