@@ -20,8 +20,9 @@ for i in range(0, 1000):
 
 ## Documentation
 
-###[Dataset creation and loading](docs/Dataset.md)
-###[Documentation of available environments](docs/Available environments.md)
+[Dataset creation and loading](docs/DATASET.md)
+
+[Documentation of available environments](docs/ENVIRONMENTS.md)
 
 ## Run on Docker
 

@@ -38,4 +38,4 @@ You can now manipulate the data with following documentation: https://pytorch.or
 # What are the labels of each environment ?
 
 To find the available labels of each environment you can refer to: 
-[Documentation of available environments](../docs/Available environments.md)
+[Documentation of available environments](ENVIRONMENTS.md)
