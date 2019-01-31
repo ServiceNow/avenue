@@ -117,7 +117,7 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 | Name                            | Description  | Size |
 | :-----------:                   |:------------ |:----:|
 |object_distance | Distance of the object to detect in Unity metrics (close to meter). | 1|
-|object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash| 1|
+|object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash]| 1|
 
 ### Demo
 #### *Circuit Greyscale / Circuit*
