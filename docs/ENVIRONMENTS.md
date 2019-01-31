@@ -1,7 +1,9 @@
 
 ## Environments
 
-#### Default reward
+If not specified all the environments have the default reward, done, vector states and action space if not overwritten.
+
+### Default reward
 
 Negative y projection of the velocity of the car on the road + positive x projection of the velocity of the car on the 
 road (Both normalized between -1 and 1).
@@ -13,89 +15,117 @@ road (Both normalized between -1 and 1).
 -0.05 per step if the car move at a red light.
 
 
-### Continuous states environments
+### Action spaces
+The action space is dependent of each environment.
+##### Continuous action space
+| Name                            | Description  | Range|
+| :-----------:                   |:------------ |:----:|
+|delta_steering_angle |Value added to the normalized steering angle|[-1, 1]|
+|delta_speed |Value added to the normalized acceleration.|[-1, 1]|
+|brake |Braking of the car.|[-1, 1]|
 
+NB: The brake just apply after a certains treshold (0.8 by default) to be able to
+explore the action space faster. 
+
+##### Discrete action space
+
+| Name                            | Value|
+| :-----------:                   |:----:|
+|Forward|0|
+|Backward|1|
+|Left|2|
+|Right|3|
+|Brake|4|
+|Noop|5|
+##### None action space
+
+No action, useful for data collection.
+
+### State space
+
+#### Vector state
+All the environment have access to the following vector state, but some of them can have additional informations.
+
+
+| Name                            | Description  | Size |
+| :-----------:                   |:------------ |:----:|
+|waypoint_0                       |Give the 1st waypoint absolute (X,Z) coordinates to follow.|  2   |
+|waypoint_1                       |Give the 2nd waypoint absolute (X,Z) coordinates to follow.|  2   |
+|waypoint_2                       |Give the 3rd waypoint absolute (X,Z) coordinates to follow.|  2   |
+|waypoint_3                       |Give the 4th waypoint absolute (X,Z) coordinates to follow.|  2   |
+|waypoint_4                       |Give the 5th waypoint absolute (X,Z) coordinates to follow.|  2   |
+|velocity_magnitude               |Magnitude of the current velocity|  1   |
+|angle_to_next_waypoint_in_degrees|Give the angle between car direction and the closest waypoint direction.|  1   |
+|velocity                         |Give the car velocity (X, Y, Z).|  3   |
+|top_speed                        |Give the car maximum speed allowed (useful to normalize speed).|  1   |
+|ground_col                       |Detect if a collision occurs between the bottom of the car and something else than the road (sidewalks, terrain, etc...).|  1   |
+|collide_car                      |Detect front collision with a car.|  1   |
+|collide_pedestrian               |Detect front collision with a pedestrian.|  1   |
+|position                         |Center of the car absolute position (X, Y, Z).|  3   |
+|forward                          |Forward direction of the car (X, Y, Z).|  3   |
+|closest_waypoint                 |Closest waypoint of the car position (X, Y, Z).|  3   |
+|horizontal_force                 |Current horizontal force applied (normalized steering angle).|  1   |
+|vertical_force                   |Current vertical force applied (normalized acceleration).|  1   |
+N.B: The closest waypoint and waypoint_0, waypoint_0 is the next targeted waypoint, and closest waypoint is the one
+with the minimum distance in space.
+##### How to acces this state ?
+
+In all the case you can access these informations for each state as a dictionary in the *info* variable, for example:
+
+```
+    state, reward, done, info = env.step(env.action_space.sample())
+    info["avenue_state"]
+    
+    # info["avenue_state"] contains a named tuple with the previously introduced variables
+    AvenueState(waypoint_0=array([14.266401  , -0.05009404], dtype=float32), waypoint_1=array([16.185207  , -0.05794133], dtype=float32), waypoint_2=array([18.119398  , -0.06565315], dtype=float32), waypoint_3=array([19.723623  , -0.07186319], dtype=float32), waypoint_4=array([21.304419  , -0.07777983], dtype=float32), velocity_magnitude=array([4.423185], dtype=float32), angle_to_next_waypoint_in_degrees=array([-22.980762], dtype=float32), velocity=array([ 4.0277534 , -0.02018626, -1.8279392 ], dtype=float32), top_speed=array([15.], dtype=float32), ground_col=array([1.], dtype=float32), collide_car=array([0.], dtype=float32), collide_pedestrian=array([0.], dtype=float32), position=array([-9.8921570e+01,  3.5929665e-02, -1.7101895e+02], dtype=float32), forward=array([ 8.7174380e-01, -3.5436172e-04, -4.8996192e-01], dtype=float32), closest_waypoint=array([-1.0704553e+02,  5.9997559e-02, -1.7537646e+02], dtype=float32), horizontal_force=array([1], dtype=float32), vertical_force=array([1], dtype=float32))
+    
+```
+
+Or if you want to access it in the state as a vector (not as a dictionary), you can access it like that:
+```
+    state, reward, done, info = env.step(env.action_space.sample())
+    state["vector"]
+```
+
+#### Visual state
+It depend on the environment and it's specified for each environment which input(s) are available.
+The visual states are all concatenated in the 3rd dimension, in this order:
+
+| Name                            | Dimension number|
+| :-----------:                   |:----:|
+|Grayscale|1|
+|RGB|3|
+|Depth|1|
+|Segmentation|1|
+
+### Environments
+| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Dimensions|Description|Additional vector state(s)|
+| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|
+| Circuit|Continuous action space|:heavy_check_mark:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|
+
+### DEMOS
+#### *Circuit Greyscale*
+``` env = env.make("CircuitGreyscale") ```
+
+##### Description of the environment
+The car must drive on a circuit as fast as possible with going out the track.
+##### Visual state
+Grayscale of size 64 by 256.
+##### Vector state
+None
 ##### Action space
-
-The action space is the same for all continuous environments : 
-
-[delta_steering_angle, delta_speed, brake]
-
-The two first actions modify the current speed and angle. We made this decision because it simplify the exploration 
-problem for self-driving car. Although, the brake just apply after a certains treshold (0.8 by default) to be able to
-explore the action space fastly. 
-The 3 actions have a range between -1 and 1.  
- 
-
-#### *Circuit Visual (segmentation + depth)*
-``` env = env.make("CircuitVisual") ```
-
-##### Description of the environment
-The car must drive on a circuit as fast as possible with going out the track.
-##### State
-Semantic segmentation and depth map of size 84 by 84. 
-##### Example
-![Alt text](../example/CircuitSegmentation.gif?raw=true "Title")
-
-#### *Circuit Rgb*
-``` env = env.make("CircuitRgb") ```
-
-##### Description of the environment
-The car must drive on a circuit as fast as possible with going out the track.
-##### State
-RGB(grayscale) of size 128 by 256. 
-##### Example
+Continuous control
+##### Demo
 ![Alt text](../example/CircuitRgb.gif?raw=true "Title")
 
 #### *Circuit*
 ``` env = env.make("Circuit") ```
 ##### Description of the environment
-Same as *CircuitSegmentation* but with a continuous state. Since we don't need rendering at each action this environment is really
+Same as *CircuitSegmentation* but with a vector state. Since we don't need rendering at each action this environment is really
 fast. 
-##### State
+##### Visual state
+None
+##### Vector state
+Default
 
-State of size 13 that contains:
- <ul>
-    <li>5 next (x, y) relative waypoints coordinates.</li>
-    <li>Signed angle with the road in degree.</li>
-    <li>current steering angle normalized between -1 and 1 [- max steering angle, max steering angle].</li>
-    <li>current speed normalized between -1 and 1 [0, max speed].</li>
- </ul>
-
-##### Example
-
-![Alt text](../example/CircuitSegmentation.gif?raw=true "Title")
-
-#### *BirdView*
-``` env = env.make("BirdView") ```
-##### Description of the environment
-On road with bird view segmentation and traffic on the road.
-##### State
-Camera segmentation of size 210 x 160.
-##### Example
-
-![Alt text](../example/RaceAgainstTimeSolo.gif?raw=true "Title")
-
-#### *BirdView*
-``` env = env.make("BirdViewSolo") ```
-##### Description of the environment
-Same as BirdView without traffic.
-##### State
-Camera segmentation of size 210 x 160.
-##### Example
-
-![Alt text](../example/RaceAgainstTime.gif?raw=true "Title")
-
-### Special environments
-``` env = env.make("DatasetCollector") ```
-#### *Dataset collector*
-##### Description of the environment
-This environment come with an autopilot and doesn't need reinforcement learning. There's a 
-step to do every 500 simulations step (to get diverse images) where you can collect the data. The action space is of size 0. 
-
-There's a special repository to collect and read data efficiently here: 
-TODO
-
-##### Example
-
-![Alt text](../example/DatasetCollection.gif?raw=true "Title")
+TODO: Think of public useful environments.

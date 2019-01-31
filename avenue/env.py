@@ -28,7 +28,7 @@ class AvenueState(namedtuple):
     forward = 3
     closest_waypoint = 3
     horizontal_force = 1
-    vertical_force = 0
+    vertical_force = 1
 
 
 class AvenueStateZoom(namedtuple):
@@ -55,10 +55,10 @@ class AvenueStateZoom(namedtuple):
 
 class UnityEnv(gym.Wrapper):
     host_ids: dict
-    visual: bool
+    visual: bool = True
     asset_name: str
     vector_state_class: str = "AvenueState"
-    overwrite_reward: bool = True
+    overwrite_reward: bool = False
 
     def __init__(self):
 
@@ -219,13 +219,13 @@ class AllStatesAvenueEnv(AvenueEnv):
         return m, r, d, info
 
 
-class VisualAvenueEnv(AvenueEnv):
+class VisualAvenueEnv(AllStatesAvenueEnv):
     def __init__(self):
         super().__init__()
-        self.observation_space = spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
+        self.observation_space = self.observation_space.spaces["visual"]
 
     def step(self, a):
-        _ , r, d, info = super().step(a)
+        _, r, d, info = super().step(a)
         (vis_obs,), = info['brain_info'].visual_observations
         vis_obs = (255 * vis_obs).astype(np.uint8)
         return vis_obs, r, d, info

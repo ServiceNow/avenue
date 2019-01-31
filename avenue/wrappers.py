@@ -4,6 +4,7 @@ from collections import deque
 import numpy as np
 import os
 
+
 class DifferentialActions(gym.ObservationWrapper):
     action = None
 
@@ -28,7 +29,31 @@ class DifferentialActions(gym.ObservationWrapper):
         self.action = np.clip(action, -1, 1)
         return super().step(self.action)
 
-class DifferentialActionsVisual(DifferentialActions):
+
+class DifferentialActionsVisual(gym.ObservationWrapper):
+    action = None
+
+    def __init__(self, env, alpha=0.2):
+        super().__init__(env)
+        self.alpha = alpha
+
+    def reset(self):
+        self.action = np.zeros(self.action_space.shape, np.float32)
+        return super().reset()
+
+    def step(self, action):
+        da = self.alpha * np.asarray(action, dtype=np.float32)
+        action = self.action + da
+        self.action = np.clip(action, -1, 1)
+        return super().step(self.action)
+
+    def observation(self, m):
+        import pdb; pdb.set_trace()
+        return np.concatenate((m, self.action))
+
+
+class DifferentialActionsAllStates(DifferentialActions):
+
     def __init__(self, env, alpha=0.2):
         self.alpha = alpha
         super(gym.ObservationWrapper, self).__init__(env)
