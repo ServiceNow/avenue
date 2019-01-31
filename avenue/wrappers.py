@@ -113,5 +113,5 @@ class VideoSaver(gym.Wrapper):
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
-        self.video_buffer.append((ob * 255).astype(np.uint8))
+        self.video_buffer.append((ob["visual"] * 255).astype(np.uint8))
         return ob, reward, done, info

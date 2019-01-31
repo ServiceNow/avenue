@@ -1,19 +1,18 @@
 
 ## Environments
 
-If not specified all the environments have the default reward, done, vector states and action space if not overwritten.
-
 ### Default reward
+You can overwrite the reward function if necessary, but the default reward is an addition of theses terms:
 
-Negative y projection of the velocity of the car on the road + positive x projection of the velocity of the car on the 
-road (Both normalized between -1 and 1).
+| Name | Weight | Description | Sign |
+|:---: | :----: | :---------: | :---:|
+| Crash  |   1    |The agent touch a pedestrian or a car.|  - |
+| Sidewalk  |   0.01    |The bottom of the agent touch the sidewalk.|  - |
+| RedLight  |   0.05    |The car move at a red light.|  - |
+| YProjection  |   1  |Y projection of the agent velocity on the direction of the road.|  + |
+| XProjection  |   1  |X projection of the agent velocity on the direction of the road.|  - |
 
--1 if the car touch a pedestrian or a car.
-
--0.01 per step if the car touch the sidewalk.
-
--0.05 per step if the car move at a red light.
-
+The reward is normalized between -1 and 1.
 
 ### Action spaces
 The action space is dependent of each environment.
@@ -23,6 +22,8 @@ The action space is dependent of each environment.
 |delta_steering_angle |Value added to the normalized steering angle|[-1, 1]|
 |delta_speed |Value added to the normalized acceleration.|[-1, 1]|
 |brake |Braking of the car.|[-1, 1]|
+
+
 
 NB: The brake just apply after a certains treshold (0.8 by default) to be able to
 explore the action space faster. 
@@ -99,33 +100,29 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 |Segmentation|1|
 
 ### Environments
-| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Dimensions|Description|Additional vector state(s)|
-| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|
-| Circuit|Continuous action space|:heavy_check_mark:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|
+| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward ||
+| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|:---:|
+| CircuitGreyscale|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:||64 x 256|Simple track.|None|Default|
+| Circuit|Continuous action space|:x:|:x:|:x:|:x:||0|Simple track.|None|Default|
+| ZoomScenario|None action space|:x:|:heavy_check_mark:|:x:|:x:||600 x 400|Zoom project.|See Details below.|See Details below.|
 
-### DEMOS
-#### *Circuit Greyscale*
-``` env = env.make("CircuitGreyscale") ```
+### Details
+#### *ZoomScenario*
+##### Reward
+| Name | Weight | Description | Sign |
+|:---: | :----: | :---------: | :---:|
 
-##### Description of the environment
-The car must drive on a circuit as fast as possible with going out the track.
-##### Visual state
-Grayscale of size 64 by 256.
-##### Vector state
-None
-##### Action space
-Continuous control
-##### Demo
+
+##### Additional state
+| Name                            | Description  | Size |
+| :-----------:                   |:------------ |:----:|
+|object_distance | Distance of the object to detect in Unity metrics (close to meter). | 1|
+|object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash| 1|
+
+### Demo
+#### *Circuit Greyscale / Circuit*
+
 ![Alt text](../example/CircuitRgb.gif?raw=true "Title")
+#### *ScenarioZoom*
+![Alt text](../example/ScenarioZoom.gif?raw=true "Title")
 
-#### *Circuit*
-``` env = env.make("Circuit") ```
-##### Description of the environment
-Same as *CircuitSegmentation* but with a vector state. Since we don't need rendering at each action this environment is really
-fast. 
-##### Visual state
-None
-##### Vector state
-Default
-
-TODO: Think of public useful environments.
