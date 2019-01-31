@@ -67,3 +67,5 @@ data = labels
 
 with open(os.path.join(full_directory_path, "labels.json"), 'w') as outfile:
     json.dump(data, outfile)
+
+print("Data successfully saved in : " + full_directory_path)
