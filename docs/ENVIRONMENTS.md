@@ -100,11 +100,11 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 |Segmentation|1|
 
 ### Environments
-| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward ||
-| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|:---:|
-| CircuitGreyscale|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:||64 x 256|Simple track.|None|Default|
-| Circuit|Continuous action space|:x:|:x:|:x:|:x:||0|Simple track.|None|Default|
-| ZoomScenario|None action space|:x:|:heavy_check_mark:|:x:|:x:||600 x 400|Zoom project.|See Details below.|See Details below.|
+| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward |
+| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|
+| CircuitGreyscale|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Simple track.|None|Default|
+| Circuit|Continuous action space|:x:|:x:|:x:|:x:|0|Simple track.|None|Default|
+| ZoomScenario|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
 
 ### Details
 #### *ZoomScenario*
