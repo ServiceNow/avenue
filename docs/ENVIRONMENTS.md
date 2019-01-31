@@ -69,7 +69,7 @@ All the environment have access to the following vector state, but some of them 
 |vertical_force                   |Current vertical force applied (normalized acceleration).|  1   |
 
 
-N.B: The closest waypoint and waypoint_0, waypoint_0 is the next targeted waypoint, and closest waypoint is the one
+N.B: The closest waypoint and waypoint_0 are not the same, waypoint_0 is the next targeted waypoint, and closest waypoint is the one
 with the minimum distance in space.
 
 ##### How to acces this state ?
