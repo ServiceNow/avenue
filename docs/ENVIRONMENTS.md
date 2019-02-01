@@ -105,12 +105,11 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 ### Environments
 | Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward |
 | :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|
-| CircuitGreyscale|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Simple track.|None|Default|
-| Circuit|Continuous action space|:x:|:x:|:x:|:x:|0|Simple track.|None|Default|
-| ZoomScenario|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
+| Circuit_v1|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Simple track.|None|Default|
+| ScenarioZoom_v1|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
 
 ### Details
-#### *ZoomScenario*
+#### *ScenarioZoom_v1*
 ##### Reward
 | Name | Weight | Description | Sign |
 |:---: | :----: | :---------: | :---:|
@@ -123,9 +122,7 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 |object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash]| 1|
 
 ### Demo
-#### *Circuit Greyscale / Circuit*
-
+#### *Circuit*
 ![Alt text](../example/CircuitGreyscale.gif?raw=true "Title")
 #### *ScenarioZoom*
 ![Alt text](../example/ScenarioZoom_v1.gif?raw=true "Title")
-

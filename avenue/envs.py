@@ -3,20 +3,14 @@ from .wrappers import DifferentialActions, DifferentialActionsVisual
 from gym.wrappers import TimeLimit
 
 
-class Circuit(AvenueEnv):
-    host_ids = {'linux': '1t0Uy29qUteBUzot2pfEyXKWWnrBAJRN-'}
-    asset_name = 'circuit'
-    visual = False
-
-
-class CircuitGreyscale(AllStatesAvenueEnv):
-    host_ids = {'linux': '16ppvjY8xT7p5R-bVGe6OtNle6rLW8PuN'}
+class Circuit(AllStatesAvenueEnv):
+    host_ids = {'linux': '1zwBR0dFZx4oH6YgRz5V4C-kxHiU_HTPc'}
     visual = True
-    asset_name = 'circuit_rgb'
+    asset_name = 'circuit'
 
 
 class ScenarioZoom(AllStatesAvenueEnv):
-    host_ids = {'linux': '16ppvjY8xT7p5R-bVGe6OtNle6rLW8PuN'}
+    host_ids = {'linux': '1A15E-aQjrf_VnPUQmLXSkwfng-BD5H8W'}
     visual = True
     asset_name = 'scenario_zoom'
     vector_state_class = "AvenueStateZoom"
@@ -24,13 +18,6 @@ class ScenarioZoom(AllStatesAvenueEnv):
 
 def Circuit_v1():
     env = Circuit()
-    env = TimeLimit(env, max_episode_steps=10000)
-    env = DifferentialActions(env)
-    return env
-
-
-def CircuitGreyscale_v1():
-    env = CircuitGreyscale()
     env = DifferentialActionsVisual(env)
     return env
 
