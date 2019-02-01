@@ -10,7 +10,6 @@ import warnings
 warnings.filterwarnings("ignore")
 plt.ion()   # interactive mode
 
-
 class AvenueDataset(Dataset):
     """Avenue dataset format."""
 

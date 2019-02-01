@@ -1,6 +1,6 @@
 import avenue
 from avenue.wrappers import VideoSaver
-env = avenue.make("ScenarioZoom")
+env = avenue.make("ScenarioZoom_v1")
 
 env = VideoSaver(env)
 
@@ -13,4 +13,4 @@ for i in range(0, 100):
     _, _, done, _ = env.step(env.action_space.sample())
 
 
-env.save_video("ScenarioZoom" + ".gif")
+env.save_video("ScenarioZoom_v1" + ".gif")

@@ -30,29 +30,7 @@ class DifferentialActions(gym.ObservationWrapper):
         return super().step(self.action)
 
 
-class DifferentialActionsVisual(gym.ObservationWrapper):
-    action = None
-
-    def __init__(self, env, alpha=0.2):
-        super().__init__(env)
-        self.alpha = alpha
-
-    def reset(self):
-        self.action = np.zeros(self.action_space.shape, np.float32)
-        return super().reset()
-
-    def step(self, action):
-        da = self.alpha * np.asarray(action, dtype=np.float32)
-        action = self.action + da
-        self.action = np.clip(action, -1, 1)
-        return super().step(self.action)
-
-    def observation(self, m):
-        import pdb; pdb.set_trace()
-        return np.concatenate((m, self.action))
-
-
-class DifferentialActionsAllStates(DifferentialActions):
+class DifferentialActionsVisual(DifferentialActions):
 
     def __init__(self, env, alpha=0.2):
         self.alpha = alpha
@@ -113,5 +91,5 @@ class VideoSaver(gym.Wrapper):
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
-        self.video_buffer.append((ob["visual"] * 255).astype(np.uint8))
+        self.video_buffer.append((ob["visual"]))
         return ob, reward, done, info

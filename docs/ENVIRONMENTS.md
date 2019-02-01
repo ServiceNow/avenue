@@ -125,7 +125,7 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 ### Demo
 #### *Circuit Greyscale / Circuit*
 
-![Alt text](../example/CircuitRgb.gif?raw=true "Title")
+![Alt text](../example/CircuitGreyscale.gif?raw=true "Title")
 #### *ScenarioZoom*
-![Alt text](../example/ScenarioZoom.gif?raw=true "Title")
+![Alt text](../example/ScenarioZoom_v1.gif?raw=true "Title")
 

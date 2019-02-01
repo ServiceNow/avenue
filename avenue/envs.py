@@ -6,6 +6,7 @@ from gym.wrappers import TimeLimit
 class Circuit(AvenueEnv):
     host_ids = {'linux': '1t0Uy29qUteBUzot2pfEyXKWWnrBAJRN-'}
     asset_name = 'circuit'
+    visual = False
 
 
 class CircuitGreyscale(AllStatesAvenueEnv):
@@ -27,7 +28,13 @@ def Circuit_v1():
     env = DifferentialActions(env)
     return env
 
-def CircuitGrayscale_v1():
-    env = CircuitGrayscale()
+
+def CircuitGreyscale_v1():
+    env = CircuitGreyscale()
     env = DifferentialActionsVisual(env)
+    return env
+
+
+def ScenarioZoom_v1():
+    env = ScenarioZoom()
     return env
