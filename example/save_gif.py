@@ -9,7 +9,7 @@ env.reset()
 done = False
 
 
-for i in range(0, 100):
+for i in range(0, 150):
     _, _, done, _ = env.step(env.action_space.sample())
 
 

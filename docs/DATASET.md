@@ -8,7 +8,7 @@ Here's the command to create a dataset, you can specify the dataset you want to 
 the dataset and the directory where you want the dataset to be save:
 
 ```
-python avenue/dataset_collection/collect_avenue_dataset.py --save_path /tmp --env_name ZoomScenario --number_of_data 1000
+python avenue/dataset_collection/collect_avenue_dataset.py --save_path /tmp --env_name ZoomScenario_v1 --number_of_data 1000
 ```
 
 # Load a dataset

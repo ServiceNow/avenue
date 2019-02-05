@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 import json
+import numpy as np
 # Ignore warnings
 import warnings
 warnings.filterwarnings("ignore")
@@ -32,11 +33,14 @@ class AvenueDataset(Dataset):
     def __getitem__(self, idx):
         img_name = os.path.join(self.root_dir,self.labels_file[idx]["image"])
         image = io.imread(img_name)
-        labels = self.labels_file[idx]
-        labels["image"] = image
+        image = np.expand_dims(image, 2)
 
         if self.transform:
-            labels = self.transform(labels)
+            image = self.transform(image)
+
+
+        labels = self.labels_file[idx]
+        labels["image"] = image
 
         return labels
 
