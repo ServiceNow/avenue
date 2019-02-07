@@ -8,8 +8,10 @@ import json
 import numpy as np
 # Ignore warnings
 import warnings
+import torch
 warnings.filterwarnings("ignore")
 plt.ion()   # interactive mode
+
 
 class AvenueDataset(Dataset):
     """Avenue dataset format."""
@@ -38,11 +40,17 @@ class AvenueDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-
         labels = self.labels_file[idx]
-        labels["image"] = image
+        return image, labels
 
-        return labels
+
+class OnRoadObjectClassification(AvenueDataset):
+    """Avenue dataset that return images with object on the road from three classes (boxes, balls and trashes)
+    and the corresponding class of the object and distance."""
+
+    def __getitem__(self, idx):
+        image, labels = super(OnRoadObjectClassification, self).__getitem__(idx)
+        return image, int(labels["object_class"][0] - 1), labels["object_distance"][0]
 
 
 # Test dataset loading
