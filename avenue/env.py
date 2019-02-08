@@ -19,6 +19,8 @@ class AvenueState(namedtuple):
     waypoint_4 = 2
     velocity_magnitude = 1
     angle_to_next_waypoint_in_degrees = 1
+    horizontal_force = 1
+    vertical_force = 1
     velocity = 3
     top_speed = 1
     ground_col = 1
@@ -27,8 +29,7 @@ class AvenueState(namedtuple):
     position = 3
     forward = 3
     closest_waypoint = 3
-    horizontal_force = 1
-    vertical_force = 1
+
 
 
 class AvenueStateZoom(namedtuple):
@@ -39,6 +40,8 @@ class AvenueStateZoom(namedtuple):
     waypoint_4 = 2
     velocity_magnitude = 1
     angle_to_next_waypoint_in_degrees = 1
+    horizontal_force = 1
+    vertical_force = 1
     velocity = 3
     top_speed = 1
     ground_col = 1
@@ -47,8 +50,6 @@ class AvenueStateZoom(namedtuple):
     position = 3
     forward = 3
     closest_waypoint = 3
-    horizontal_force = 1
-    vertical_force = 1
     object_distance = 1
     object_class = 1
 
