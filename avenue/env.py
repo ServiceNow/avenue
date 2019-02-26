@@ -122,14 +122,13 @@ def asset_path(asset_id):
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-
 class AvenueEnv(UnityEnv):
     StateType = AvenueState
     state: AvenueState = None
 
     def __init__(self):
         super().__init__()
-        state_dims = self.StateType()
+        state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
         self.observation_space = spaces.Box(-1, 1, (sum(state_dims),), np.float32)
         # TODO: make observation space tuple (and create a wrapper to convert it into a vector)
@@ -149,14 +148,14 @@ class AvenueEnv(UnityEnv):
         vec_obs, = info['brain_info'].vector_observations
         vec_obs = np.asarray(vec_obs, dtype=np.float32)
 
-        self.state = self.StateType(*np.split(vec_obs, self.state_idx))
+        self.state = globals()[self.vector_state_class](*np.split(vec_obs, self.state_idx))
 
         reward = self.compute_reward(self.state, r, d)
 
         done = self.compute_terminal(self.state, r, d)
 
         info = dict(info, reset=False, avenue_state=self.state)  # reset=False, i.e. all dones are true terminals
-        return vec_obs, reward, done, info 
+        return vec_obs, reward, done, info
 
     def compute_terminal(self, s, r, d):
         return d
