@@ -9,9 +9,10 @@ def ensure_executable(bin):
         return
     import stat
     for ext in ['x86', 'x86_64']:
-            filename = bin + '.' + ext
-            st = os.stat(filename)
-            os.chmod(filename, st.st_mode | stat.S_IEXEC)
+        filename = bin + '.' + ext
+        if os.path.exists(filename):
+          st = os.stat(filename)
+          os.chmod(filename, st.st_mode | stat.S_IEXEC)
 
 
 
@@ -36,11 +37,15 @@ class namedtuple(tuple):
       return cls._nt(*args, **kwargs)
 
 
-class A(namedtuple):
-  a = 4
-  b = None
-  c: ...
+def test_namedtuple():
+  class A(namedtuple):
+    c: ...
+    a = 4
+    b = None
+    
 
+  x = A(b=5, c=8)
+  assert x == (8, 4, 5) and x.b == 5 and x.a == 4 and x == A(8, 4, 5)
 
-x = A(b=5, c=8)
-assert x == (8, 4, 5) and x.b == 5 and x.a == 4 and x == A(8, 4, 5)
+if __name__ == "__main__":
+  test_namedtuple()

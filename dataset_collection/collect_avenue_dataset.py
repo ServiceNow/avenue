@@ -22,8 +22,8 @@ def convert_dict_np_to_list(d):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env_name', default="ScenarioZoom", type=str,
-                        help='environment to train on (default: "ScenarioZoom")')
+    parser.add_argument('--env_name', default="Circuit_v1", type=str,
+                        help='environment to train on (default: "Circuit_v1")')
 
     parser.add_argument('--number_of_data', default=100, type=int,
                         help='Number of frames to collect (default: 100)')
@@ -56,13 +56,13 @@ for i in range(0, args.number_of_data):
     label_entry = convert_dict_np_to_list(info["avenue_state"]._asdict())
     image_path = "image_" + str(i) + ".jpg"
     label_entry["image"] = image_path
-    scipy.misc.imsave(os.path.join(full_directory_path, image_path), ob["visual"][:, :,0])
+    scipy.misc.imsave(os.path.join(full_directory_path, image_path), ob["visual"])
     labels.append(label_entry)
 
     if done:
         env.reset()
 
-    if i % 1000 == 0:
+    if i % 100 == 0:
         with open(os.path.join(full_directory_path, "labels.json"), 'w') as outfile:
             json.dump(labels, outfile)
 
