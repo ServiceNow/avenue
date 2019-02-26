@@ -155,7 +155,7 @@ class AvenueEnv(UnityEnv):
 
         done = self.compute_terminal(self.state, r, d)
 
-        info = dict(info, reset=False)  # reset=False, i.e. all dones are true terminals
+        info = dict(info, reset=False, avenue_state=self.state)  # reset=False, i.e. all dones are true terminals
         return vec_obs, reward, done, info 
 
     def compute_terminal(self, s, r, d):
