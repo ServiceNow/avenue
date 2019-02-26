@@ -177,6 +177,7 @@ class AllStatesAvenueEnv(AvenueEnv):
 
     def step(self, a):
         _, r, d, info = super().step(a)
+        s = globals()[self.vector_state_class](info['avenue_state'])
         (vis_obs,), = info['brain_info'].visual_observations
         vis_obs = (255 * vis_obs).astype(np.uint8)
         m = dict(vector=s, visual=vis_obs)
