@@ -5,8 +5,11 @@ AVENUE Simulator is a simulator based on Unity 3D game engine designed to test r
 
 ## Installation
 ```bash
+# clone repository
+git clone https://github.com/cyrilibrahim/Avenue.git 
+
 # install avenue
-pip install 'git+https://github.com/ElementAI/avenue.git'
+pip install 'git+https://github.com/cyrilibrahim/Avenue.git'
 ```
 ## Quick start
 
