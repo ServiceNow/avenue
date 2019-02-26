@@ -56,6 +56,6 @@ class OnRoadObjectClassification(AvenueDataset):
 # Test dataset loading
 if __name__ == '__main__':
     avenue_data = AvenueDataset("/tmp/ScenarioZoom_1548889499")
-    print("Data set length:" + str(len(avenue_data)))
-    print("First line:")
+    #print("Data set length:" + str(len(avenue_data)))
+    #print("First line:")
     print(avenue_data[0])

@@ -15,6 +15,11 @@ class ScenarioZoom(AllStatesAvenueEnv):
     asset_name = 'scenario_zoom'
     vector_state_class = "AvenueStateZoom"
 
+class Humanware(AllStatesAvenueEnv):
+    host_ids = {'linux': '1A15E-aQjrf_VnPUQmLXSkwfng-BD5H8W'}
+    visual = True
+    asset_name = 'humanware'
+    vector_state_class = "Humanware"
 
 def Circuit_v1():
     env = Circuit()
@@ -25,3 +30,8 @@ def Circuit_v1():
 def ScenarioZoom_v1():
     env = ScenarioZoom()
     return env
+
+def Humanware_v1():
+    env = Humanware()
+    return env
+

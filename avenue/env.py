@@ -53,6 +53,13 @@ class AvenueStateZoom(namedtuple):
     object_class = 1
 
 
+class Humanware(namedtuple):
+    house_number = 1
+    height = 1
+    width = 1
+    x_top_left = 1
+    y_top_left = 1
+
 class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool = True
@@ -215,7 +222,7 @@ class AllStatesAvenueEnv(AvenueEnv):
         s = globals()[ self.vector_state_class](info['avenue_state'])
         (vis_obs,), = info['brain_info'].visual_observations
         vis_obs = (255 * vis_obs).astype(np.uint8)
-        m = dict(vector=[s.velocity_magnitude / s.top_speed], visual=vis_obs)
+        m = dict(vector=s, visual=vis_obs)
         return m, r, d, info
 
 
