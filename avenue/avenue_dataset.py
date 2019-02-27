@@ -44,17 +44,17 @@ class AvenueDataset(Dataset):
         return image, labels
 
 
+# Specialization of the dataloader
 class OnRoadObjectClassification(AvenueDataset):
     """Avenue dataset that return images with object on the road from three classes (boxes, balls and trashes)
     and the corresponding class of the object and distance."""
 
     def __getitem__(self, idx):
         image, labels = super(OnRoadObjectClassification, self).__getitem__(idx)
-        return image, int(labels["object_class"][0] - 1), labels["object_distance"][0]
+        return image, int(labels["object_class"][0]), labels["object_distance"][0]
 
 
 # Test dataset loading
 if __name__ == '__main__':
-    avenue_data = AvenueDataset("/tmp/ScenarioZoom_1548889499")
-    print(avenue_data[0])
+    avenue_data = OnRoadObjectClassification("/tmp/ScenarioZoom_v1_1551284328")
 
