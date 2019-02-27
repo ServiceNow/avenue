@@ -12,6 +12,7 @@ class ScenarioZoom(AllStatesAvenueEnv):
     StateType = AvenueStateZoom
     host_ids = {'linux': '1A15E-aQjrf_VnPUQmLXSkwfng-BD5H8W'}
     asset_name = 'scenario_zoom'
+    vector_state_class = "AvenueStateZoom"
 
 
 class Roundcourse(RoundcourseEnv):
