@@ -12,13 +12,14 @@ class ScenarioZoom(AllStatesAvenueEnv):
     StateType = AvenueStateZoom
     host_ids = {'linux': '1A15E-aQjrf_VnPUQmLXSkwfng-BD5H8W'}
     asset_name = 'scenario_zoom'
+    vector_state_class = "AvenueStateZoom"
 
 
 class Roundcourse(RoundcourseEnv):
     asset_name = 'roundcourse'
 
 class Humanware(AllStatesAvenueEnv):
-    host_ids = {'linux': '1CTLO-OJOAjWQFBbbM6SRdHtoX90favx9'}
+    host_ids = {'linux': '19EmKdEpksDTHS2RRxBy22B53WZflXSLA'}
     visual = True
     asset_name = 'humanware'
     vector_state_class = "Humanware"
@@ -36,4 +37,3 @@ def ScenarioZoom_v1():
 def Humanware_v1():
     env = Humanware()
     return env
-
