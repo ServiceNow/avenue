@@ -19,7 +19,7 @@ class Roundcourse(RoundcourseEnv):
     asset_name = 'roundcourse'
 
 class Humanware(AllStatesAvenueEnv):
-    host_ids = {'linux': '1WL9DkAnaZcMLHnXnhdWhgFeebnPA2OEH'}
+    host_ids = {'linux': '1nfDXWnRR6NN8SlLHKFRZAsxtyGJamfRf'}
     visual = True
     asset_name = 'humanware'
     vector_state_class = "Humanware"
