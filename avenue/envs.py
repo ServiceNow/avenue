@@ -19,10 +19,11 @@ class Roundcourse(RoundcourseEnv):
     asset_name = 'roundcourse'
 
 class Humanware(AllStatesAvenueEnv):
-    host_ids = {'linux': '19EmKdEpksDTHS2RRxBy22B53WZflXSLA'}
+    host_ids = {'linux': '1WL9DkAnaZcMLHnXnhdWhgFeebnPA2OEH'}
     visual = True
     asset_name = 'humanware'
     vector_state_class = "Humanware"
+
 
 def Circuit_v1():
     env = Circuit()
@@ -33,6 +34,7 @@ def Circuit_v1():
 def ScenarioZoom_v1():
     env = ScenarioZoom()
     return env
+
 
 def Humanware_v1():
     env = Humanware()
