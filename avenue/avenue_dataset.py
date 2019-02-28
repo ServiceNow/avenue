@@ -12,6 +12,8 @@ import torch
 warnings.filterwarnings("ignore")
 plt.ion()   # interactive mode
 
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 class AvenueDataset(Dataset):
     """Avenue dataset format."""
@@ -56,5 +58,5 @@ class OnRoadObjectClassification(AvenueDataset):
 
 # Test dataset loading
 if __name__ == '__main__':
-    avenue_data = OnRoadObjectClassification("/tmp/ScenarioZoom_v1_1551284328")
-
+    avenue_data = AvenueDataset("/tmp/Humanware_v1_1551306484")
+    data_row = avenue_data[10]

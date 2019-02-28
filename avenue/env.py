@@ -60,7 +60,8 @@ class Humanware(namedtuple):
     width = 1
     x_top_left = 1
     y_top_left = 1
-
+    screen_height = 1
+    screen_width = 1
 class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool = False
