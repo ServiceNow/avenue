@@ -110,9 +110,32 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 
 ### Configure the environment
 
-When you do ```avenue.make(env_name)``` you have the possibility to add 
+When you do ```avenue.make(env_name)``` you have the possibility to configure many element of the environments,
+to change the configuration of you environments you can just pass the config as a named argument in the ``avenue.make``
+method. For example:
 
-### Details
+```
+config = {
+            "curvature" : 300, 
+            "lane_number": 4, 
+            "road_length": 1000, 
+            "weather_condition": 1, 
+            "vehicle_types": 0, 
+            "time" : 20, 
+            "city_seed" : 20, 
+            "night_mode" : 1
+        }
+        
+env = avenue.make("AvenueContinuous_v1", config = config)
+```
+
+#### Elements of the environment that you can control
+
+| Name | Description | Range | Example |
+|:---: | :----: | :---------: | :-------------------:|
+|
+
+### Additional details for specific environments
 #### *ScenarioZoom_v1*
 ##### Reward
 | Name | Weight | Description | Sign |
@@ -128,5 +151,3 @@ When you do ```avenue.make(env_name)``` you have the possibility to add
 ### Demo
 #### *AvenueContinuous_v1*
 ![Alt text](../example/AvenueContinuous_v1.gif?raw=true "Title")
-#### *ScenarioZoom*
-![Alt text](../example/ScenarioZoom_v1.gif?raw=true "Title")
