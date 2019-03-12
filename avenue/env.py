@@ -1,4 +1,4 @@
-import gym_unity.envs
+from avenue.gym_unity.envs import UnityEnv as GymUnityEnv
 import os
 import platform
 import zipfile
@@ -62,13 +62,13 @@ class Humanware(namedtuple):
     y_top_left = 1
     screen_height = 1
     screen_width = 1
+
 class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool = False
     asset_name: str
 
-    def __init__(self):
-        seed = random.randint(10000, 20000)
+    def __init__(self, config=None, seed=0):
         system = platform.system().lower()
 
         if self.asset_name is not None:
@@ -82,7 +82,13 @@ class UnityEnv(gym.Wrapper):
 
         path = os.path.join(path_asset, id_asset)
         ensure_executable(path)
-        env = gym_unity.envs.UnityEnv(environment_filename=path, worker_id=seed, use_visual=self.visual)
+        env = GymUnityEnv(environment_filename=path, worker_id=seed, use_visual=self.visual)
+        env.reset(config)
+
+        for i in range(seed):
+            env.step(env.action_space.sample())
+
+        env.reset(config)
         super().__init__(env)
     
     def download_assets(self, path):
@@ -100,8 +106,8 @@ class UnityEnv(gym.Wrapper):
         os.remove(path + '.zip')
         print("Unpacked !")
 
-    def reset(self):
-        return self.env.reset()
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)
     
     def step(self, a):
         return self.env.step(a)
@@ -123,19 +129,20 @@ def asset_path(asset_id):
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+
 class AvenueEnv(UnityEnv):
     StateType = AvenueState
     state: AvenueState = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
         self.observation_space = spaces.Box(-1, 1, (sum(state_dims),), np.float32)
         # TODO: make observation space tuple (and create a wrapper to convert it into a vector)
 
     def reset(self, **kwargs):
-        _ = self.env.reset()
+        _ = self.env.reset(**kwargs)
         m, _, _, _ = self.step(self.action_space.sample())  # we need to step to get info
         return m
 
@@ -168,8 +175,8 @@ class AvenueEnv(UnityEnv):
 class AllStatesAvenueEnv(AvenueEnv):
     visual = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.observation_space = spaces.Dict(dict(
             vector=spaces.Box(-1, 1, (1,), np.float32),
             visual=spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
@@ -208,8 +215,8 @@ class RoundcourseEnv(AllStatesAvenueEnv):
 
 
 class VisualAvenueEnv(AllStatesAvenueEnv):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.observation_space = self.observation_space.spaces["visual"]
 
     def step(self, a):

@@ -10,12 +10,10 @@ setup(name='avenue',
       license='',
       zip_safe=False,
       install_requires=[
-            "gym_unity",
             "gdown",
             "mlagents==0.5.0"
       ],
       setup_requires=[
-          "gym_unity",
           "gdown",
           "mlagents==0.5.0"
       ],

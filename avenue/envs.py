@@ -18,12 +18,25 @@ class ScenarioZoom(AllStatesAvenueEnv):
 class Roundcourse(RoundcourseEnv):
     asset_name = 'roundcourse'
 
+
 class Humanware(AllStatesAvenueEnv):
     host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
     visual = True
     asset_name = 'humanware'
     vector_state_class = "Humanware"
 
+
+class AvenueContinuous(AllStatesAvenueEnv):
+    host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
+    visual = True
+    asset_name = 'avenue_continuous'
+    vector_state_class = "AvenueState"
+
+class AvenueContinuousNoVisual(AvenueEnv):
+    host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
+    visual = True
+    asset_name = 'avenue_continuous'
+    vector_state_class = "AvenueState"
 
 def Circuit_v1():
     env = Circuit()
@@ -38,4 +51,10 @@ def ScenarioZoom_v1():
 
 def Humanware_v1():
     env = Humanware()
+    return env
+
+
+def AvenueContinuous_v1(**kwargs):
+    env = AvenueContinuous(**kwargs)
+    env = DifferentialActionsVisual(env)
     return env

@@ -18,9 +18,9 @@ class DifferentialActions(gym.ObservationWrapper):
     def observation(self, m):
         return np.concatenate((m, self.action))
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.action = np.zeros(self.action_space.shape, np.float32)
-        return super().reset()
+        return super().reset(**kwargs)
 
     def step(self, action):
         da = self.alpha * np.asarray(action, dtype=np.float32)
@@ -63,8 +63,8 @@ class ConcatVisualUnity(gym.Wrapper):
         shp = env.observation_space.shape
         self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], nb_channel))
 
-    def reset(self):
-        ob = self.env.reset()
+    def reset(self, **kwargs):
+        ob = self.env.reset(**kwargs)
         ob, reward, done, info = self.step(self.action_space.sample())
         return np.concatenate(info["brain_info"].visual_observations, axis=3).squeeze(0)
 
@@ -79,9 +79,9 @@ class VideoSaver(gym.Wrapper):
         self._env = self.env
         self.video_buffer = deque(maxlen=10000)
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.video_buffer.clear()
-        ob = self.env.reset()
+        ob = self.env.reset(**kwargs)
         return ob
 
     def save_video(self, path="/tmp/gif_avenue.gif"):
