@@ -22,14 +22,14 @@ class Humanware(AllStatesAvenueEnv):
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz-'}
+    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
 
 class AvenueContinuousNoVisual(AvenueEnv):
-    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz-'}
+    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
