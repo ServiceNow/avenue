@@ -3,11 +3,6 @@ from .wrappers import DifferentialActions, DifferentialActionsVisual
 from gym.wrappers import TimeLimit
 
 
-class Circuit(AllStatesAvenueEnv):
-    host_ids = {'linux': '1zwBR0dFZx4oH6YgRz5V4C-kxHiU_HTPc'}
-    asset_name = 'circuit'
-
-
 class ScenarioZoom(AllStatesAvenueEnv):
     StateType = AvenueStateZoom
     host_ids = {'linux': '1A15E-aQjrf_VnPUQmLXSkwfng-BD5H8W'}
@@ -27,21 +22,17 @@ class Humanware(AllStatesAvenueEnv):
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
+    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz-'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
+
 
 class AvenueContinuousNoVisual(AvenueEnv):
-    host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
+    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz-'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
-
-def Circuit_v1():
-    env = Circuit()
-    env = DifferentialActionsVisual(env)
-    return env
 
 
 def ScenarioZoom_v1():
