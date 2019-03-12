@@ -15,7 +15,7 @@ pip install 'git+https://github.com/cyrilibrahim/Avenue.git'
 
 ```python
 import avenue
-env = avenue.make("Circuit_v1")
+env = avenue.make("AvenueContinuous_v1")
 state = env.reset()
 for i in range(0, 1000):
     state, reward, done, info = env.step(env.action_space.sample())
