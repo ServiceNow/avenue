@@ -97,7 +97,7 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 
 | Name                            | Dimension number|
 | :-----------:                   |:----:|
-|Grayscale|1|
+|Greyscale|1|
 |RGB|3|
 |Depth|1|
 |Segmentation|1|
