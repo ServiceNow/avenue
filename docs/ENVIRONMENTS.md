@@ -108,6 +108,10 @@ The visual states are all concatenated in the 3rd dimension, in this order:
 | AvenueContinuous_v1|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Continuous control.|None|Default|
 | ScenarioZoom_v1|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
 
+### Configure the environment
+
+When you do ```avenue.make(env_name)``` you have the possibility to add 
+
 ### Details
 #### *ScenarioZoom_v1*
 ##### Reward
