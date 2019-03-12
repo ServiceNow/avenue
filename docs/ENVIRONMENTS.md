@@ -133,12 +133,15 @@ env = avenue.make("AvenueContinuous_v1", config = config)
 
 | Name | Description | Range | Content |
 |:---: | :----: | :---------: | :-------------------:|
-|weather_condition | Control the weather with predefined settings | [0 - 9] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Heavy snow </li> <li>5 : Cloudy</li> <li>6 : Cloudy 2</li> <li>7 : Cloudy 3</li>  <li>8 : Cloudy 4</li> <li>9 : Storm</li> </ul> |
+|weather_condition | Control the weather with predefined settings. | [0 - 9] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Heavy snow </li> <li>5 : Cloudy</li> <li>6 : Cloudy 2</li> <li>7 : Cloudy 3</li>  <li>8 : Cloudy 4</li> <li>9 : Storm</li> </ul> |
 |lane_number| Number of lanes. | [1- 12]||
 |road_length| Length of the road in meter. | [200-2000]||
 |night_mode| Tell if the light are activated or not. | [0-1]| <ul><li>0 : Lights off</li><li> 1: Lights on</li></ul>|
 |time| Time of the day (hour only) | [0-23]||
-|curvature| Curvature of the road. Do a deformation of the road in its middle and translate this point by the curvature value in the perpendicular direction of the road. | [0-1000]||
+|curvature| Curvature of the road. | [-1000 - 1000]||
+|starting_speed| Starting speed of the car. | [0 - 100]||
+|vehicle_types| Vehicle type. | [0 - 1]|<ul><li>0: Racing car</li><li>1: SUV</li></ul>|
+|City seed| Seed of the city. | [0 - 10000]||
 
 ### Additional details for specific environments
 <!--
