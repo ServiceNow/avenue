@@ -51,9 +51,17 @@ def AvenueContinuous_v1(**kwargs):
     return env
 
 
-def ZoomBrakingSunny_v1(**kwargs):
-    config = {"curvature": 0, "lane_number": 1, "road_length": 750, "weather_condition": 0, "vehicle_types": 0,
+def ZoomBrakingSunny_v1(config=None, **kwargs):
+
+    old_config = {"curvature": 0, "lane_number": 1, "road_length": 750, "weather_condition": 0, "vehicle_types": 0,
               "time": 12, "city_seed": 121, "night_mode": 0, "task": 1, "starting_speed": 20}
+
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+
     env = AvenueContinuous(config = config, **kwargs)
     env = BrakeDiscreteControl(env)
     env = WrapPyTorch(env)
