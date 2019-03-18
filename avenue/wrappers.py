@@ -47,6 +47,27 @@ class DifferentialActionsVisual(DifferentialActions):
         return dict(m, vector=np.concatenate((m['vector'], self.action)))
 
 
+class BrakeDiscreteControl(gym.Wrapper):
+
+    def __init__(self, env):
+        super().__init__(env)
+        self.action_space = spaces.Discrete(2)
+
+    def reset(self, **kwargs):
+        ob = self.env.reset(**kwargs)
+        return ob["visual"]
+
+    def step(self, action):
+
+        new_action = np.zeros(3, np.float32)
+        if action  == 1:
+            new_action[2] = 1
+        elif action == 0:
+            new_action[2] = 0
+        ob, reward, done, info = super().step(new_action)
+        return ob["visual"], reward, done, None
+
+
 class ConcatVisualUnity(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -93,3 +114,14 @@ class VideoSaver(gym.Wrapper):
         ob, reward, done, info = self.env.step(action)
         self.video_buffer.append((ob["visual"]))
         return ob, reward, done, info
+
+
+class WrapPyTorch(gym.ObservationWrapper):
+    def __init__(self, env=None):
+        super(WrapPyTorch, self).__init__(env)
+        obs_shape = self.observation_space.spaces["visual"].shape
+        new_shape = (obs_shape[2], obs_shape[1], obs_shape[0])
+        self.observation_space = spaces.Box(low=0, high=1, shape=new_shape, dtype=np.float32)
+
+    def observation(self, observation):
+        return observation.transpose(2, 0, 1)/255

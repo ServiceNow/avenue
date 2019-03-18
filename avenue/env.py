@@ -31,7 +31,6 @@ class AvenueState(namedtuple):
     closest_waypoint = 3
 
 
-
 class AvenueStateZoom(namedtuple):
     waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
     waypoint_1 = 2
@@ -82,13 +81,9 @@ class UnityEnv(gym.Wrapper):
 
         path = os.path.join(path_asset, id_asset)
         ensure_executable(path)
-        env = GymUnityEnv(environment_filename=path, worker_id=seed, use_visual=self.visual)
+        env = GymUnityEnv(environment_filename=path, worker_id=random.randint(1000, 10000), use_visual=self.visual)
         env.reset(config)
-
-        for i in range(seed):
-            env.step(env.action_space.sample())
-
-        env.reset(config)
+        env.reset(config, train_mode=True)
         super().__init__(env)
     
     def download_assets(self, path):

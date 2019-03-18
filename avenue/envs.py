@@ -1,5 +1,5 @@
 from .env import AvenueEnv, VisualAvenueEnv, UnityEnv, AllStatesAvenueEnv, RoundcourseEnv, AvenueStateZoom
-from .wrappers import DifferentialActions, DifferentialActionsVisual
+from .wrappers import DifferentialActions, DifferentialActionsVisual, BrakeDiscreteControl, WrapPyTorch
 from gym.wrappers import TimeLimit
 
 
@@ -22,7 +22,7 @@ class Humanware(AllStatesAvenueEnv):
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz'}
+    host_ids = {'linux': '1SqPdQQti3Sb1qj1R_yEACO2fb0r5eeqP'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
@@ -48,4 +48,13 @@ def Humanware_v1():
 def AvenueContinuous_v1(**kwargs):
     env = AvenueContinuous(**kwargs)
     env = DifferentialActionsVisual(env)
+    return env
+
+
+def ZoomBrakingSunny_v1(**kwargs):
+    config = {"curvature": 0, "lane_number": 1, "road_length": 750, "weather_condition": 0, "vehicle_types": 0,
+              "time": 12, "city_seed": 121, "night_mode": 0, "task": 1, "starting_speed": 20}
+    env = AvenueContinuous(config = config, **kwargs)
+    env = BrakeDiscreteControl(env)
+    env = WrapPyTorch(env)
     return env

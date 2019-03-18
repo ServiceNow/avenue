@@ -24,7 +24,5 @@ for i in range(0, 1000):
 ```
 
 ## Documentation
-
 [Dataset creation and loading](docs/DATASET.md)
-
 [Documentation of available environments](docs/ENVIRONMENTS.md)

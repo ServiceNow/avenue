@@ -88,13 +88,13 @@ class UnityEnv(gym.Env):
         else:
             self._observation_space = spaces.Box(-high, high)
 
-    def reset(self, config=None):
+    def reset(self, config=None, train_mode=True):
         """Resets the state of the environment and returns an initial observation.
         In the case of multi-agent environments, this is a list.
         Returns: observation (object/list): the initial observation of the
             space.
         """
-        info = self._env.reset(config=config)[self.brain_name]
+        info = self._env.reset(config=config, train_mode=train_mode)[self.brain_name]
         n_agents = len(info.agents)
         self._check_agents(n_agents)
 
