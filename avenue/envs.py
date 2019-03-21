@@ -29,7 +29,7 @@ class AvenueContinuous(AllStatesAvenueEnv):
 
 
 class AvenueContinuousNoVisual(AvenueEnv):
-    host_ids = {'linux': '1C9m9moICFwCIda3vtFqTcSNYf4F3kKoz'}
+    host_ids = {'linux': '17_cxtMwRv814jzwDTIxVwmubBAuP83zi'}
     visual = True
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
