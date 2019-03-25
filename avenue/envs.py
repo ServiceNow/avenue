@@ -15,6 +15,7 @@ class ScenarioZoom(AllStatesAvenueEnv):
 
 
 class Roundcourse(RoundcourseEnv):
+    # TODO: upload
     asset_name = 'roundcourse'
 
 
