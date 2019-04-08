@@ -3,7 +3,9 @@ import gym
 import numpy as np
 from mlagents.envs import UnityEnvironment
 from gym import error, spaces
-
+import random
+import os
+import signal
 
 class UnityGymException(error.Error):
     """
@@ -31,6 +33,7 @@ class UnityEnv(gym.Env):
         :param use_visual: Whether to use visual observation or vector observation.
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
         """
+
         self._env = UnityEnvironment(environment_filename, worker_id)
 
         self.name = self._env.academy_name
@@ -169,6 +172,7 @@ class UnityEnv(gym.Env):
         Environments will automatically close() themselves when
         garbage collected or when the program exits.
         """
+        #os.kill(self._env.proc1, signal.SIGKILL)
         self._env.close()
 
     def get_action_meanings(self):

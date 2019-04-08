@@ -62,6 +62,7 @@ class Humanware(namedtuple):
     screen_height = 1
     screen_width = 1
 
+
 class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool = False
@@ -70,6 +71,7 @@ class UnityEnv(gym.Wrapper):
     def __init__(self, config=None, seed=0):
         system = platform.system().lower()
 
+        # Check if the binary is missing, in this can download it.
         if self.asset_name is not None:
 
             id_asset = asset_id(self.asset_name, platform.system())
@@ -83,7 +85,6 @@ class UnityEnv(gym.Wrapper):
         ensure_executable(path)
         env = GymUnityEnv(environment_filename=path, worker_id=random.randint(1000, 10000), use_visual=self.visual)
         env.reset(config)
-        env.reset(config, train_mode=True)
         super().__init__(env)
     
     def download_assets(self, path):
@@ -114,12 +115,14 @@ def asset_id(name, system):
     path = '{}-{}'.format(name, system)
     return path
 
+
 def asset_path(asset_id):
     project_root = os.path.dirname(os.path.dirname(__file__))
     default_path = os.path.join(project_root, 'unity_assets')
     dir = os.environ.get('AVENUE_ASSETS', default_path)
     path = os.path.join(dir, asset_id)
     return path
+
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -152,7 +155,6 @@ class AvenueEnv(UnityEnv):
         vec_obs = np.asarray(vec_obs, dtype=np.float32)
 
         self.state = globals()[self.vector_state_class](*np.split(vec_obs, self.state_idx))
-
         reward = self.compute_reward(self.state, r, d)
 
         done = self.compute_terminal(self.state, r, d)
@@ -180,9 +182,13 @@ class AllStatesAvenueEnv(AvenueEnv):
     def step(self, a):
         _, r, d, info = super().step(a)
         s = globals()[self.vector_state_class](info['avenue_state'])
-        (vis_obs,), = info['brain_info'].visual_observations
-        vis_obs = (255 * vis_obs).astype(np.uint8)
-        m = dict(vector=s, visual=vis_obs)
+
+        # Put each channel as a key of a dictionnary for visual observations
+        visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0), segmentation=info["brain_info"].visual_observations[1].squeeze(0))
+        visual_obs["rgb"] = (255 * visual_obs["rgb"]).astype(np.uint8)
+        visual_obs["segmentation"] = (255 * visual_obs["segmentation"]).astype(np.uint8)
+        m = dict(vector=s, visual=visual_obs)
+
         return m, r, d, info
 
 
@@ -195,17 +201,12 @@ class RoundcourseEnv(AllStatesAvenueEnv):
         """ Partially inspired by https://yanpanlau.github.io/2016/10/11/Torcs-Keras.html
         """
         theta = s.angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi
-
         normalized_velocity = min(s.velocity_magnitude / s.top_speed, 1)
-
         r = 0.
         # r += 0.2 * normalized_velocity
-
         r += 1. * np.cos(theta) * normalized_velocity
-
         r -= 1. * np.abs(np.sin(theta) * normalized_velocity)
         r, = r
-
         return r
 
 
@@ -217,5 +218,5 @@ class VisualAvenueEnv(AllStatesAvenueEnv):
     def step(self, a):
         _, r, d, info = super().step(a)
         (vis_obs,), = info['brain_info'].visual_observations
-        vis_obs = (255 * vis_obs).astype(np.uint8)
+        vis_obs = (255 * vis_obs).astype(np.int8)
         return vis_obs, r, d, info

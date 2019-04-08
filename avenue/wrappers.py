@@ -65,7 +65,7 @@ class BrakeDiscreteControl(gym.Wrapper):
         elif action == 0:
             new_action[2] = 0
         ob, reward, done, info = super().step(new_action)
-        return ob["visual"], reward, done, None
+        return ob["visual"], reward, done, info
 
 
 class ConcatVisualUnity(gym.Wrapper):

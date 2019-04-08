@@ -1,18 +1,16 @@
 import avenue
 import numpy as np
 import time
+import random
 
-env = avenue.make("ZoomBrakingSunny_v1")
-env.reset(train_mode=True)
+random.seed(2313)
+
+env = avenue.make("PedestrianClassification_v1")
+env.reset(train_mode=False)
 
 start_time = time.time()
-x = 1 # displays the frame rate every 1 second
-counter = 0
 
 for i in range(0, 1000):
-    action = np.random.binomial(1, 0.01, 1)
-    ob, _, _, info = env.step(action)
-    print(ob.shape)
-    counter+=1
-    print("FPS: ", counter / (time.time() - start_time))
+    ob, _, _, info = env.step(env.action_space.sample())
+    print("FPS: ", i / (time.time() - start_time))
 

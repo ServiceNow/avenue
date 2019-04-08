@@ -1,7 +1,7 @@
 from .env import AvenueEnv, VisualAvenueEnv, UnityEnv, AllStatesAvenueEnv, RoundcourseEnv, AvenueStateZoom
 from .wrappers import DifferentialActions, DifferentialActionsVisual, BrakeDiscreteControl, WrapPyTorch
 from gym.wrappers import TimeLimit
-
+import random
 
 class ScenarioZoom(AllStatesAvenueEnv):
     StateType = AvenueStateZoom
@@ -52,17 +52,48 @@ def AvenueContinuous_v1(**kwargs):
 
 
 def ZoomBrakingSunny_v1(config=None, **kwargs):
-
     old_config = {"curvature": 0, "lane_number": 1, "road_length": 750, "weather_condition": 0, "vehicle_types": 0,
-              "time": 12, "city_seed": 121, "night_mode": 0, "task": 1, "starting_speed": 20}
+              "time": 12, "city_seed": 223123, "night_mode": 0, "task": 1, "starting_speed": 20}
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+    env = AvenueContinuous(config = config, **kwargs)
+    env = BrakeDiscreteControl(env)
+    env = WrapPyTorch(env)
+    return env
+
+
+def PedestrianClassification_v1(config=None, **kwargs):
+
+    random_hour = random.randint(6, 20)
+    if random_hour < 9 or random_hour > 17:
+        night_mode = True
+    else:
+        night_mode = False
+
+    # Randomize config here
+    old_config = {
+        "road_length": 500,
+        "curvature": random.randint(0, 100),
+        "lane_number": random.randint(1, 4),
+        "task": 2,
+        "time": random_hour,
+        "city_seed": random.randint(0, 100000),
+        "skip_frame": 30,
+        "height": 600,
+        "width": 800,
+        "night_mode" : night_mode,
+        "pedestrian_distracted_percent": random.random(),
+        "pedestrian_density" : random.randint(3, 30),
+        "weather_condition" : 0
+    }
 
     if config:
         old_config.update(config)
         config = old_config
     else:
         config = old_config
-
-    env = AvenueContinuous(config = config, **kwargs)
-    env = BrakeDiscreteControl(env)
-    env = WrapPyTorch(env)
+    env = AvenueContinuous(config=config, **kwargs)
     return env
