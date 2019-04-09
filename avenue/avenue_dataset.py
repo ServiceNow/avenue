@@ -2,13 +2,11 @@ from __future__ import print_function, division
 import os
 from skimage import io
 import matplotlib.pyplot as plt
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from torch.utils.data import Dataset
 import json
 import numpy as np
 # Ignore warnings
 import warnings
-import torch
 warnings.filterwarnings("ignore")
 plt.ion()   # interactive mode
 
