@@ -5,6 +5,7 @@ import zipfile
 import gdown
 import random
 import gym
+from gym import spaces
 import numpy as np
 from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
