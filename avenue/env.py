@@ -6,8 +6,7 @@ import gdown
 import random
 import gym
 import numpy as np
-from numpy.linalg import norm
-from .util import ensure_executable, asset_id, asset_path, sigmoid
+from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
 
 
