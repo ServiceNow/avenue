@@ -58,10 +58,9 @@ class AvenueDataset(Dataset):
         # specific load for rgb
         rgb_name = os.path.join(os.path.join(self.root_dir, "rgb"), self.labels_file[idx]["image"]) + ".jpg"
         rgb = io.imread(rgb_name)
-        rgb = np.expand_dims(rgb, 2)
 
         # Specific load for segmentation
-        segmentation_name = os.path.join(os.path.join(self.root_dir, "segmentation"), self.labels_file[idx]["image"]) + ".png"
+        segmentation_name = os.path.join(os.path.join(self.root_dir, "segmentation"), self.labels_file[idx]["image"])+".png"
         segmentation = io.imread(segmentation_name)
         segmentation = np.expand_dims(segmentation, 2)
 
@@ -69,9 +68,9 @@ class AvenueDataset(Dataset):
         if self.mask_list is not None:
             mask = np.zeros_like(segmentation)
             for i in range(len(self.mask_list)):
-                mask = mask & (segmentation == self.dict_segmentation[self.mask_list[i]])
+                mask = mask | (segmentation == self.dict_segmentation[self.mask_list[i]])
 
-            segmentation[mask] = 0
+            segmentation[(1 - mask).astype(bool)] = 0
 
         # Transform if necessary
         if self.transform:

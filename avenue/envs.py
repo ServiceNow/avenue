@@ -68,6 +68,7 @@ Here we can register really specific environments for randomize parameters, curr
 TODO: complete doc 
 """
 
+
 def Humanware_v1():
     env = Humanware()
     return env
@@ -100,8 +101,8 @@ def PedestrianClassification_v1(config=None, **kwargs):
         "width": 800,
         "night_mode" : night_mode,
         "pedestrian_distracted_percent": random.random(),
-        "pedestrian_density" : random.randint(3, 30),
-        "weather_condition" : 0
+        "pedestrian_density": random.randint(3, 30),
+        "weather_condition": 0
     }
 
     if config:
