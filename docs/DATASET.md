@@ -24,7 +24,7 @@ to specify the directory path of your dataset (and pytorch transform object even
 For example, if you want the first item of your dataset, you can do:
 
 ```
-first_data = avenue_data[0]
+rgb, segmentation, labels = avenue_data[0]
 ```
 
 Or the length of your dataset:
@@ -39,30 +39,3 @@ You can now manipulate the data with following documentation: https://pytorch.or
 
 To find the available labels of each environment you can refer to: 
 [Documentation of available environments](ENVIRONMENTS.md)
-
-# Available dataset
-
-## OnRoadObjectClassification
-
-Dataset that return images with object on the road from three classes (boxes, balls and trashes)
-and the corresponding class of the object and distance.
-
-### Download link
-https://drive.google.com/file/d/1INRpo8r6NUDw8KcOyTsk3mwoe1COcHE0/view?usp=sharing
-
-### How to load it ?
-```
-from avenue.avenue_dataset import OnRoadObjectClassification
-dataset = OnRoadObjectClassification(root_dir=/dataset/path/, transform=None)
-```
-
-### What does it return ?
-A tuple with as the first element the image of size (Width, Height, 1), object class (int between 0 and 2), 
-object distance (in meters).
-
-
-```
-dataset[0]
-# Return
-(array([[[ 31],[ 39],[ 38],...,[ 68],[ 81],[ 79]]], dtype=uint8), 1, 138.14410400390625)
-```

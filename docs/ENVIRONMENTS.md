@@ -92,21 +92,19 @@ Or if you want to access it in the state as a vector (not as a dictionary), you 
 ```
 
 #### Visual state
-It depend on the environment and it's specified for each environment which input(s) are available.
-The visual states are all concatenated in the 3rd dimension, in this order:
+Depending of which class your environment inherit, the state will contains no visual informations,
+rgb, segmentation or both:
 
-| Name                            | Dimension number|
-| :-----------:                   |:----:|
-|Greyscale|1|
-|RGB|3|
-|Depth|1|
-|Segmentation|1|
-
+| Inherited class|visual state type|
+| :-----------:|:----:|
+|AvenueEnv| No visual information|
+|RgbAvenueEnv|state is an np.array of size (width, height, 3)|
+|SegmentationAvenueEnv|state is an np.array of size (width, height, 1)|
+|AllStatesAvenueEnv|Rgb is in state["visual"]["rgb"], segmentation is in state["visual"]["segmentation"], vector state in state["vector"]|
 ### Environments
-| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward |
-| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|
-| AvenueContinuous_v1|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Continuous control.|None|Default|
-| ScenarioZoom_v1|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
+| Name |Action space|Inherited type |Description|Additional vector state(s)| Reward |
+| :---:|:----------:|:----:|:-------:|:---------------------------:|:---:|
+| AvenueContinuous_v1|Continuous action space|AllStatesAvenueEnv||Go as fast as possible on the given road.|Default|
 
 ### Configure the environment
 
@@ -142,20 +140,11 @@ env = avenue.make("AvenueContinuous_v1", config = config)
 |starting_speed| Starting speed of the car. | [0 - 100]||
 |vehicle_types| Vehicle type. | [0 - 1]|<ul><li>0: Racing car</li><li>1: SUV</li></ul>|
 |City seed| Seed of the city. | [0 - 10000]||
+|Skip render frames| Number of frame to skip. | [0 - 100]||
+|Width| Desired width rendering. | [64 - 1024]||
+|Height| Desired height rendering. | [64 - 1024]||
 
 ### Additional details for specific environments
-<!--
-#### *ScenarioZoom_v1*
-##### Reward
-| Name | Weight | Description | Sign |
-|:---: | :----: | :---------: | :---:|
-
-##### Additional state
-| Name                            | Description  | Size |
-| :-----------:                   |:------------ |:----:|
-|object_distance | Distance of the object to detect in Unity metrics (close to meter). | 1|
-|object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash]| 1|
--->
 
 ### Demo
 #### *AvenueContinuous_v1*

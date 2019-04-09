@@ -6,64 +6,15 @@ import gdown
 import random
 import gym
 import numpy as np
-from gym import spaces
 from numpy.linalg import norm
-from .util import ensure_executable, namedtuple
-
-
-class AvenueState(namedtuple):
-    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
-    waypoint_1 = 2
-    waypoint_2 = 2
-    waypoint_3 = 2
-    waypoint_4 = 2
-    velocity_magnitude = 1
-    angle_to_next_waypoint_in_degrees = 1
-    horizontal_force = 1
-    vertical_force = 1
-    velocity = 3
-    top_speed = 1
-    ground_col = 1
-    collide_car = 1
-    collide_pedestrian = 1
-    position = 3
-    forward = 3
-    closest_waypoint = 3
-
-
-class AvenueStateZoom(namedtuple):
-    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
-    waypoint_1 = 2
-    waypoint_2 = 2
-    waypoint_3 = 2
-    waypoint_4 = 2
-    velocity_magnitude = 1
-    angle_to_next_waypoint_in_degrees = 1
-    horizontal_force = 1
-    vertical_force = 1
-    velocity = 3
-    top_speed = 1
-    ground_col = 1
-    collide_car = 1
-    collide_pedestrian = 1
-    position = 3
-    forward = 3
-    closest_waypoint = 3
-    object_distance = 1
-    object_class = 1
-
-
-class Humanware(namedtuple):
-    house_number = 1
-    height = 1
-    width = 1
-    x_top_left = 1
-    y_top_left = 1
-    screen_height = 1
-    screen_width = 1
+from .util import ensure_executable, asset_id, asset_path, sigmoid
+from avenue.avenue_states import *
 
 
 class UnityEnv(gym.Wrapper):
+    """
+        Base class for avenue gym wrapper and automatic download.
+    """
     host_ids: dict
     visual: bool = False
     asset_name: str
@@ -109,26 +60,10 @@ class UnityEnv(gym.Wrapper):
         return self.env.step(a)
 
 
-def asset_id(name, system):
-    system = system.lower()
-    assert system in ['windows', 'darwin', 'linux'], 'only windows, linux, mac are supported'
-    path = '{}-{}'.format(name, system)
-    return path
-
-
-def asset_path(asset_id):
-    project_root = os.path.dirname(os.path.dirname(__file__))
-    default_path = os.path.join(project_root, 'unity_assets')
-    dir = os.environ.get('AVENUE_ASSETS', default_path)
-    path = os.path.join(dir, asset_id)
-    return path
-
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-
 class AvenueEnv(UnityEnv):
+    """
+        Avenue env with vector state return.
+    """
     StateType = AvenueState
     state: AvenueState = None
 
@@ -136,8 +71,7 @@ class AvenueEnv(UnityEnv):
         super().__init__(**kwargs)
         state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
-        self.observation_space = spaces.Box(-1, 1, (sum(state_dims),), np.float32)
-        # TODO: make observation space tuple (and create a wrapper to convert it into a vector)
+        self.observation_space = spaces.Box(-1, 1, (sum(state_dims),))
 
     def reset(self, **kwargs):
         _ = self.env.reset(**kwargs)
@@ -156,7 +90,6 @@ class AvenueEnv(UnityEnv):
 
         self.state = globals()[self.vector_state_class](*np.split(vec_obs, self.state_idx))
         reward = self.compute_reward(self.state, r, d)
-
         done = self.compute_terminal(self.state, r, d)
 
         info = dict(info, reset=False, avenue_state=self.state)  # reset=False, i.e. all dones are true terminals
@@ -170,6 +103,9 @@ class AvenueEnv(UnityEnv):
 
 
 class AllStatesAvenueEnv(AvenueEnv):
+    """
+        Avenue env with vector state return, rgb and segmentation.
+    """
     visual = True
 
     def __init__(self, **kwargs):
@@ -182,7 +118,6 @@ class AllStatesAvenueEnv(AvenueEnv):
     def step(self, a):
         _, r, d, info = super().step(a)
         s = globals()[self.vector_state_class](info['avenue_state'])
-
         # Put each channel as a key of a dictionnary for visual observations
         visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0), segmentation=info["brain_info"].visual_observations[1].squeeze(0))
         visual_obs["rgb"] = (255 * visual_obs["rgb"]).astype(np.uint8)
@@ -192,31 +127,31 @@ class AllStatesAvenueEnv(AvenueEnv):
         return m, r, d, info
 
 
-class RoundcourseEnv(AllStatesAvenueEnv):
-    def compute_terminal(self, s, r, d):
-        # return s.collide_car or s.collide_pedestrian  # TODO: what else?
-        return d
-
-    def compute_reward(self, s: AvenueState, r, d):
-        """ Partially inspired by https://yanpanlau.github.io/2016/10/11/Torcs-Keras.html
-        """
-        theta = s.angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi
-        normalized_velocity = min(s.velocity_magnitude / s.top_speed, 1)
-        r = 0.
-        # r += 0.2 * normalized_velocity
-        r += 1. * np.cos(theta) * normalized_velocity
-        r -= 1. * np.abs(np.sin(theta) * normalized_velocity)
-        r, = r
-        return r
-
-
-class VisualAvenueEnv(AllStatesAvenueEnv):
+class RgbAvenueEnv(AllStatesAvenueEnv):
+    """
+        Avenue env with rgb return.
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.observation_space = self.observation_space.spaces["visual"]
 
     def step(self, a):
         _, r, d, info = super().step(a)
-        (vis_obs,), = info['brain_info'].visual_observations
+        (vis_obs,), = info['brain_info'].visual_observations[0]
+        vis_obs = (255 * vis_obs).astype(np.int8)
+        return vis_obs, r, d, info
+
+
+class SegmentationAvenueEnv(AllStatesAvenueEnv):
+    """
+        Avenue env with segmentation return.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.observation_space = self.observation_space.spaces["visual"]
+
+    def step(self, a):
+        _, r, d, info = super().step(a)
+        (vis_obs,), = info['brain_info'].visual_observations[1]
         vis_obs = (255 * vis_obs).astype(np.int8)
         return vis_obs, r, d, info

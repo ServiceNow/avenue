@@ -15,8 +15,27 @@ def ensure_executable(bin):
           os.chmod(filename, st.st_mode | stat.S_IEXEC)
 
 
+def asset_id(name, system):
+    system = system.lower()
+    assert system in ['windows', 'darwin', 'linux'], 'only windows, linux, mac are supported'
+    path = '{}-{}'.format(name, system)
+    return path
+
+
+def asset_path(asset_id):
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    default_path = os.path.join(project_root, 'unity_assets')
+    dir = os.environ.get('AVENUE_ASSETS', default_path)
+    path = os.path.join(dir, asset_id)
+    return path
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
 
 class namedtuple(tuple):
+
     """An easier to use namedtuple. Example:
 
        class A(namedtuple):
@@ -46,6 +65,7 @@ def test_namedtuple():
 
   x = A(b=5, c=8)
   assert x == (8, 4, 5) and x.b == 5 and x.a == 4 and x == A(8, 4, 5)
+
 
 if __name__ == "__main__":
   test_namedtuple()
