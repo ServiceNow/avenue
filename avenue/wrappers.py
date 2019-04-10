@@ -125,3 +125,32 @@ class WrapPyTorch(gym.ObservationWrapper):
 
     def observation(self, observation):
         return observation.transpose(2, 0, 1)/255
+
+
+class MaxStep(gym.Wrapper):
+    def __init__(self, env, max_episode_steps=None):
+        super(MaxStep, self).__init__(env)
+        self._max_episode_steps = max_episode_steps
+        self._elapsed_steps = 0
+
+    def _past_limit(self):
+        """Return true if we are past our limit"""
+        if self._max_episode_steps is not None and self._max_episode_steps <= self._elapsed_steps:
+            return True
+
+        return False
+
+    def step(self, action):
+        observation, reward, done, info = self.env.step(action)
+        self._elapsed_steps += 1
+
+        if self._past_limit():
+            if self.metadata.get('semantics.autoreset'):
+                _ = self.reset() # automatically reset the env
+            done = True
+
+        return observation, reward, done, info
+
+    def reset(self, **kwargs):
+        self._elapsed_steps = 0
+        return self.env.reset(**kwargs)

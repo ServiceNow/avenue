@@ -36,6 +36,11 @@ class AvenueContinuous(AllStatesAvenueEnv):
     vector_state_class = "AvenueState"
 
 
+class AvenueContinuousVector(AvenueEnv):
+    host_ids = {'linux': '1SqPdQQti3Sb1qj1R_yEACO2fb0r5eeqP'}
+    asset_name = 'avenue_continuous'
+    vector_state_class = "AvenueState"
+
 class Humanware(AllStatesAvenueEnv):
     host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
     asset_name = 'humanware'
@@ -77,6 +82,51 @@ def Humanware_v1():
 def AvenueContinuous_v1(**kwargs):
     env = AvenueContinuous(**kwargs)
     env = DifferentialActionsVisual(env)
+    return env
+
+
+def StraightDriveCity_v1(**kwargs):
+    config = {
+        "road_length": 500,
+        "curvature": 30,
+        "lane_number": 2,
+        "task": 0,
+        "time": 15,
+        "city_seed": 1221,
+        "skip_frame": 8,
+        "height": 64,
+        "width": 128,
+        "night_mode": False,
+        "pedestrian_distracted_percent": 0,
+        "pedestrian_density": 0,
+        "weather_condition": 0
+    }
+
+    env = AvenueContinuousVector(**kwargs, config=config)
+    env = MaxStep(env, max_episode_steps=10000)
+    env = DifferentialActions(env)
+    return env
+
+
+def StraightDriveCitySegmentation_v1(**kwargs):
+    config = {
+        "road_length": 500,
+        "curvature": 30,
+        "lane_number": 2,
+        "task": 0,
+        "time": 15,
+        "city_seed": 1221,
+        "skip_frame": 8,
+        "height": 64,
+        "width": 128,
+        "night_mode": False,
+        "pedestrian_distracted_percent": 0,
+        "pedestrian_density": 0,
+        "weather_condition": 0
+    }
+
+    env = AvenueContinuousVector(**kwargs, config=config)
+    env = DifferentialActions(env)
     return env
 
 

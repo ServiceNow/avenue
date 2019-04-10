@@ -111,7 +111,7 @@ class AllStatesAvenueEnv(AvenueEnv):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.observation_space = spaces.Dict(dict(
-            vector=spaces.Box(-1, 1, (1,), np.float32),
+            vector=self.observation_space,
             visual=spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
         ))
 
