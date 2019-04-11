@@ -7,6 +7,7 @@ import random
 import os
 import signal
 
+
 class UnityGymException(error.Error):
     """
     Any error related to the gym wrapper of ml-agents.

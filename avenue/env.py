@@ -116,14 +116,13 @@ class AllStatesAvenueEnv(AvenueEnv):
         ))
 
     def step(self, a):
-        _, r, d, info = super().step(a)
-        s = globals()[self.vector_state_class](info['avenue_state'])
+        s, r, d, info = super().step(a)
+        s = globals()[self.vector_state_class](*np.split(s, self.state_idx))
         # Put each channel as a key of a dictionnary for visual observations
         visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0), segmentation=info["brain_info"].visual_observations[1].squeeze(0))
         visual_obs["rgb"] = (255 * visual_obs["rgb"]).astype(np.uint8)
         visual_obs["segmentation"] = (255 * visual_obs["segmentation"]).astype(np.uint8)
         m = dict(vector=s, visual=visual_obs)
-
         return m, r, d, info
 
 

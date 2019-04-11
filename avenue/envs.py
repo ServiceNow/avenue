@@ -102,31 +102,9 @@ def StraightDriveCity_v1(**kwargs):
         "weather_condition": 0
     }
 
-    env = AvenueContinuousVector(**kwargs, config=config)
+    env = AvenueContinuous(**kwargs, config=config)
     env = MaxStep(env, max_episode_steps=10000)
-    env = DifferentialActions(env)
-    return env
-
-
-def StraightDriveCitySegmentation_v1(**kwargs):
-    config = {
-        "road_length": 500,
-        "curvature": 30,
-        "lane_number": 2,
-        "task": 0,
-        "time": 15,
-        "city_seed": 1221,
-        "skip_frame": 8,
-        "height": 64,
-        "width": 128,
-        "night_mode": False,
-        "pedestrian_distracted_percent": 0,
-        "pedestrian_density": 0,
-        "weather_condition": 0
-    }
-
-    env = AvenueContinuousVector(**kwargs, config=config)
-    env = DifferentialActions(env)
+    env = DifferentialActionsFullState(env)
     return env
 
 
