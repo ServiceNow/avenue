@@ -71,11 +71,26 @@ class AvenueEnv(UnityEnv):
         super().__init__(**kwargs)
         state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
-        self.observation_space = spaces.Box(-1, 1, (sum(state_dims),))
+
+        self.env.reset()
+
+        # Get the info to find the resolutions and number of camera
+        _, _, _, info = self.env.step(self.env.action_space.sample())
+
+        # Since we change the resolution in the config we need to find the new visual observations spaces (rgb,
+        # segmentation).
+        self.observation_space = spaces.Dict(dict(
+            vector=spaces.Box(-1, 1, (sum(state_dims),)),
+            visual=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),
+            segmentation=spaces.Box(0, 255, (info["brain_info"].visual_observations[0].shape[1],
+                                             info["brain_info"].visual_observations[0].shape[2],
+                                             1))
+        ))
 
     def reset(self, **kwargs):
         _ = self.env.reset(**kwargs)
-        m, _, _, _ = self.step(self.action_space.sample())  # we need to step to get info
+        m, _, _, info = self.step(self.action_space.sample())  # we need to step to get info
+
         return m
 
     def step(self, a):
@@ -108,18 +123,12 @@ class AllStatesAvenueEnv(AvenueEnv):
     """
     visual = True
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.observation_space = spaces.Dict(dict(
-            vector=self.observation_space,
-            visual=spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
-        ))
-
     def step(self, a):
         s, r, d, info = super().step(a)
         s = globals()[self.vector_state_class](*np.split(s, self.state_idx))
         # Put each channel as a key of a dictionnary for visual observations
-        visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0), segmentation=info["brain_info"].visual_observations[1].squeeze(0))
+        visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0),
+                          segmentation=info["brain_info"].visual_observations[1].squeeze(0))
         visual_obs["rgb"] = (255 * visual_obs["rgb"]).astype(np.uint8)
         visual_obs["segmentation"] = (255 * visual_obs["segmentation"]).astype(np.uint8)
         m = dict(vector=s, visual=visual_obs)
@@ -127,12 +136,6 @@ class AllStatesAvenueEnv(AvenueEnv):
 
 
 class RgbAvenueEnv(AllStatesAvenueEnv):
-    """
-        Avenue env with rgb return.
-    """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.observation_space = self.observation_space.spaces["visual"]
 
     def step(self, a):
         _, r, d, info = super().step(a)
@@ -142,12 +145,6 @@ class RgbAvenueEnv(AllStatesAvenueEnv):
 
 
 class SegmentationAvenueEnv(AllStatesAvenueEnv):
-    """
-        Avenue env with segmentation return.
-    """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.observation_space = self.observation_space.spaces["visual"]
 
     def step(self, a):
         _, r, d, info = super().step(a)

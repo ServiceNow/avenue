@@ -41,6 +41,7 @@ class AvenueContinuousVector(AvenueEnv):
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
+
 class Humanware(AllStatesAvenueEnv):
     host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
     asset_name = 'humanware'

@@ -30,10 +30,6 @@ def asset_path(asset_id):
     return path
 
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-
 class namedtuple(tuple):
 
     """An easier to use namedtuple. Example:
