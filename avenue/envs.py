@@ -31,7 +31,7 @@ TODO: doc overwrite reward etc.
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1nErYyVaXJPVo6emPiMoau1340ksPiGvx/view?usp=sharing'}
+    host_ids = {'linux': '1nErYyVaXJPVo6emPiMoau1340ksPiGvx'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
