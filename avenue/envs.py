@@ -80,7 +80,7 @@ def Humanware_v1():
     return env
 
 
-def AvenueContinuous_v1(**kwargs):
+def en(**kwargs):
     env = AvenueContinuous(**kwargs)
     env = DifferentialActionsVisual(env)
     return env
