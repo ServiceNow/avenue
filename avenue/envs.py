@@ -31,7 +31,7 @@ TODO: doc overwrite reward etc.
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1nErYyVaXJPVo6emPiMoau1340ksPiGvx'}
+    host_ids = {'linux': '1s-FwcXAaqEiZCalz3oT719AytdvVzYq8'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
@@ -80,7 +80,7 @@ def Humanware_v1():
     return env
 
 
-def en(**kwargs):
+def AvenueContinuous_v1(**kwargs):
     env = AvenueContinuous(**kwargs)
     env = DifferentialActionsVisual(env)
     return env
