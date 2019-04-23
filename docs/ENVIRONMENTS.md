@@ -131,7 +131,7 @@ env = avenue.make("AvenueContinuous_v1", config = config)
 
 | Name | Description | Range | Content |
 |:---: | :----: | :---------: | :-------------------:|
-|weather_condition | Control the weather with predefined settings. | [0 - 9] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Heavy snow </li> <li>5 : Cloudy</li> <li>6 : Cloudy 2</li> <li>7 : Cloudy 3</li>  <li>8 : Cloudy 4</li> <li>9 : Storm</li> </ul> |
+|weather_condition | Control the weather with predefined settings. | [0 - 4] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Storm </li> </ul> |
 |lane_number| Number of lanes. | [1- 12]||
 |road_length| Length of the road in meter. | [200-2000]||
 |night_mode| Tell if the light are activated or not. | [0-1]| <ul><li>0 : Lights off</li><li> 1: Lights on</li></ul>|

@@ -31,7 +31,7 @@ TODO: doc overwrite reward etc.
 
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1s-FwcXAaqEiZCalz3oT719AytdvVzYq8'}
+    host_ids = {'linux': '1uzVcLq4a02BIWMdgq5EPYkd3dkzYPGy_'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
@@ -46,7 +46,6 @@ class Humanware(AllStatesAvenueEnv):
     host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
     asset_name = 'humanware'
     vector_state_class = "Humanware"
-
 
 class RoundcourseEnv(AllStatesAvenueEnv):
 
@@ -87,6 +86,7 @@ def AvenueContinuous_v1(**kwargs):
 
 
 def StraightDriveCity_v1(**kwargs):
+
     config = {
         "road_length": 500,
         "curvature": 30,
@@ -96,7 +96,7 @@ def StraightDriveCity_v1(**kwargs):
         "city_seed": 1221,
         "skip_frame": 8,
         "height": 64,
-        "width": 128,
+        "width": 256,
         "night_mode": False,
         "pedestrian_distracted_percent": 0,
         "pedestrian_density": 0,
