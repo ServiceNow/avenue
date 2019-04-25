@@ -5,7 +5,7 @@ import random
 
 random.seed(2313)
 
-env = avenue.make("StraightDriveCity_v1")
+env = avenue.make("DriveAndAvoidPedestrian")
 env.reset(train_mode=False)
 
 start_time = time.time()
@@ -13,4 +13,3 @@ start_time = time.time()
 for i in range(0, 1000):
     ob, _, _, info = env.step(env.action_space.sample())
     print("FPS: ", i / (time.time() - start_time))
-

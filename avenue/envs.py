@@ -72,8 +72,6 @@ class RoundcourseEnv(AllStatesAvenueEnv):
 Here we can register really specific environments for randomize parameters, curriculum learning ...
 TODO: complete doc 
 """
-
-
 def Humanware_v1():
     env = Humanware()
     return env
@@ -109,6 +107,30 @@ def StraightDriveCity_v1(**kwargs):
     return env
 
 
+def PhysicsGeneralization(car_mass, **kwargs):
+
+    config = {
+        "road_length": 500,
+        "curvature": 100,
+        "lane_number": 2,
+        "task": 0,
+        "time": 15,
+        "city_seed": 100,
+        "skip_frame": 8,
+        "height": 1,
+        "width": 1,
+        "night_mode": False,
+        "pedestrian_distracted_percent": 0,
+        "pedestrian_density": 0,
+        "weather_condition": 0,
+        "car_mass": car_mass
+    }
+
+    env = AvenueContinuous(**kwargs, config=config)
+    env = MaxStep(env, max_episode_steps=10000)
+    return env
+
+
 def PedestrianClassification_v1(config=None, **kwargs):
 
     random_hour = random.randint(6, 20)
@@ -131,6 +153,40 @@ def PedestrianClassification_v1(config=None, **kwargs):
         "night_mode" : night_mode,
         "pedestrian_distracted_percent": random.random(),
         "pedestrian_density": random.randint(3, 30),
+        "weather_condition": 0
+    }
+
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+    env = AvenueContinuous(config=config, **kwargs)
+    return env
+
+
+def DriveAndAvoidPedestrian(config=None, **kwargs):
+
+    random_hour = random.randint(6, 20)
+    if random_hour < 9 or random_hour > 17:
+        night_mode = True
+    else:
+        night_mode = False
+
+    # Randomize config here
+    old_config = {
+        "road_length": 500,
+        "curvature": 0,
+        "lane_number": 1,
+        "task": 0,
+        "time": 17,
+        "city_seed": 211,
+        "skip_frame": 8,
+        "height": 64,
+        "width": 256,
+        "night_mode":night_mode,
+        "pedestrian_distracted_percent": 0.5,
+        "pedestrian_density": 30,
         "weather_condition": 0
     }
 

@@ -68,6 +68,7 @@ class AvenueEnv(UnityEnv):
     state: AvenueState = None
 
     def __init__(self, **kwargs):
+
         super().__init__(**kwargs)
         state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
@@ -86,6 +87,8 @@ class AvenueEnv(UnityEnv):
                                              info["brain_info"].visual_observations[0].shape[2],
                                              1))
         ))
+
+        self.last_horizontal_error = 0
 
     def reset(self, **kwargs):
         _ = self.env.reset(**kwargs)
@@ -115,6 +118,15 @@ class AvenueEnv(UnityEnv):
 
     def compute_reward(self, s, r, d):
         return r
+
+    def pid_action(self, s):
+        theta = (s["vector"].angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi)
+        horizontal_error =  s["vector"].horizontal_force - theta
+        horizontal_force = 0.76 * horizontal_error  +  0.5 * (horizontal_error - self.last_horizontal_error)
+        vertical_force = random.random()
+        brake_force = 0
+        self.last_horizontal_error = horizontal_error
+        return np.array([vertical_force, horizontal_force, brake_force])
 
 
 class AllStatesAvenueEnv(AvenueEnv):
