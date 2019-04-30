@@ -30,7 +30,7 @@ TODO: doc overwrite reward etc.
 """
 
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1DB_Fv_W0a1crBMYMrXRRR1UeC9_waR44'}
+    host_ids = {'linux': '1T-vyLVsFwnqj7YZPClqOPP51SS8nZkWq'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
