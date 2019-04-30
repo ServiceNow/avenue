@@ -29,9 +29,8 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 TODO: doc overwrite reward etc.
 """
 
-
 class AvenueContinuous(AllStatesAvenueEnv):
-    host_ids = {'linux': '1uzVcLq4a02BIWMdgq5EPYkd3dkzYPGy_'}
+    host_ids = {'linux': '1DB_Fv_W0a1crBMYMrXRRR1UeC9_waR44'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
