@@ -34,7 +34,7 @@ class UnityEnv(gym.Wrapper):
 
         path = os.path.join(path_asset, id_asset)
         ensure_executable(path)
-        env = GymUnityEnv(environment_filename=path, use_visual=self.visual)
+        env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(0, 10000))
         env.reset(config)
         super().__init__(env)
     
