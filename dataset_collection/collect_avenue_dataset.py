@@ -26,7 +26,7 @@ def convert_dict_np_to_list(d):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env_name', default="ScenarioZoom_v1", type=str,
+    parser.add_argument('--env_name', default="PedestrianClassification_v1", type=str,
                         help='environment to train on (default: "Circuit_v1")')
 
     parser.add_argument('--number_of_data', default=100, type=int,
