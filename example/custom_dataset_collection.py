@@ -29,10 +29,10 @@ def get_args():
     parser.add_argument('--env_name', default="Env_name", type=str,
                         help='environment to train on (default: "Circuit_v1")')
 
-    parser.add_argument('--number_of_data', default=100, type=int,
+    parser.add_argument('--number_of_data', default=10000, type=int,
                         help='Number of frames to collect (default: 100)')
 
-    parser.add_argument('--save_path', default="/tmp", type=str,
+    parser.add_argument('--save_path', default="/home/cyrili", type=str,
                         help='Path where the dataset will be saved (default: "/tmp")')
 
     args = parser.parse_args()
@@ -56,41 +56,6 @@ print("Your dataset will be saved in the directory: " + full_directory_path)
 
 env = None
 
-
-def CustomEnv(config=None, **kwargs):
-
-    random_hour = random.randint(6, 20)
-    if random_hour < 9 or random_hour > 17:
-        night_mode = True
-    else:
-        night_mode = False
-
-    # Randomize config here
-    old_config = {
-        "road_length": 500,
-        "curvature": random.randint(0, 100),
-        "lane_number": random.randint(1, 4),
-        "task": 2,
-        "time": random_hour,
-        "city_seed": random.randint(0, 100000),
-        "skip_frame": 30,
-        "height": 600,
-        "width": 800,
-        "night_mode" : night_mode,
-        "pedestrian_distracted_percent": 0,
-        "pedestrian_density": 0,
-        "weather_condition": 4
-    }
-    if config:
-        old_config.update(config)
-        config = old_config
-    else:
-        config = old_config
-    env = AvenueContinuous(config=config, **kwargs)
-
-    return env
-
-
 # For the number of data
 for i in range(0, args.number_of_data):
 
@@ -103,10 +68,13 @@ for i in range(0, args.number_of_data):
             env.close()
             print("Closed")
 
-        env = CustomEnv()
+        env = avenue.make("Climate", climat_change=False)
 
         env.reset(train_mode=True)
-
+        _, _, _, _ = env.step(env.action_space.sample())
+        _, _, _, _ = env.step(env.action_space.sample())
+        _, _, _, _ = env.step(env.action_space.sample())
+        _, _, _, _ = env.step(env.action_space.sample())
     ob, reward, done, info = env.step(env.action_space.sample())
 
     # Get the label data

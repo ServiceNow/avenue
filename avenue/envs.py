@@ -35,6 +35,17 @@ class AvenueContinuous(AllStatesAvenueEnv):
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
+class AvenueStart(BaseAvenue):
+    host_ids = {'linux': '1c5s_HhWSEmwm1JbP7tyy6V252zYVPl25'}
+    asset_name = 'avenue_continuous'
+    vector_state_class = "AvenueState"
+
+class LearnToBrakeSegmentation(AllStatesAvenueEnv):
+    host_ids = {'linux': '1c5s_HhWSEmwm1JbP7tyy6V252zYVPl25'}
+    asset_name = 'learn_to_brake_segmentation'
+    vector_state_class = "AvenueState"
+
+
 
 class AvenueContinuousVector(AvenueEnv):
     host_ids = {'linux': '1SqPdQQti3Sb1qj1R_yEACO2fb0r5eeqP'}
@@ -47,6 +58,11 @@ class Humanware(AllStatesAvenueEnv):
     asset_name = 'humanware'
     vector_state_class = "Humanware"
 
+
+class Adapt(AllStatesAvenueEnv):
+    host_ids = {'linux': '107U0_pePmwSHddWkb479Rz4wRSLzOXK-'}
+    asset_name = 'adapt_test'
+    vector_state_class = "AvenueState"
 
 class RoundcourseEnv(AllStatesAvenueEnv):
 
@@ -76,12 +92,21 @@ TODO: complete doc
 def Humanware_v1():
     env = Humanware()
     return env
+def Adapt_v1():
+    config = {
+        "height": 512,
+         "width": 512,
+         "skip_frame": 8
+    }
+    env = Adapt(config=config)
+    return env
 
 
 def AvenueContinuous_v1(**kwargs):
     env = AvenueContinuous(**kwargs)
     env = DifferentialActionsVisual(env)
     return env
+
 
 
 def StraightDriveCity_v1(**kwargs):
@@ -211,6 +236,109 @@ def ZoomRL(config=None, **kwargs):
         "pedestrian_distracted_percent": 0.5,
         "pedestrian_density": 50,
         "weather_condition": 0
+    }
+
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+    env = AvenueContinuous(config=config, **kwargs)
+    return env
+
+def LaneAvoidance(config=None, **kwargs):
+
+    # Randomize config here
+    old_config = {
+        "road_length": 1000,
+        "curvature": 0,
+        "lane_number": 4,
+        "task": 1,
+        "time": 13,
+        "city_seed": 211,
+        "skip_frame": 8,
+        "height": 512,
+        "width": 512,
+        "night_mode":False,
+        "pedestrian_distracted_percent": 0,
+        "pedestrian_density": 0,
+        "weather_condition": 0,
+        "no_decor": 1
+    }
+
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+    env = AvenueContinuous(config=config, **kwargs)
+    return env
+
+def ClimateProjet(config=None, **kwargs):
+
+    # Randomize config here
+    old_config = {
+        "road_length": 500,
+        "curvature": 0,
+        "lane_number": 2,
+        "task": 0,
+        "time": 13,
+        "city_seed": 211,
+        "skip_frame": 8,
+        "height": 512,
+        "width": 512,
+        "night_mode":False,
+        "pedestrian_distracted_percent": 0.5,
+        "pedestrian_density": 50,
+        "weather_condition": 0
+    }
+
+    if config:
+        old_config.update(config)
+        config = old_config
+    else:
+        config = old_config
+    env = AvenueContinuous(config=config, **kwargs)
+    return env
+
+
+def Climate(config=None, climat_change=False, **kwargs):
+    curr_time = random.randint(8, 17)
+    if not climat_change:
+        night = False
+        weather = 0
+    else:
+        night = True
+        weather = 4
+
+    if random.random() < 0.5:
+        road_type = 0
+    else:
+        road_type = 1
+
+    if random.random() < 0.5:
+        curvature = random.randint(-100, 100)
+    else:
+        curvature = 0
+
+
+    # Randomize config here
+    old_config = {
+        "road_length": 500,
+        "curvature": curvature,
+        "lane_number": random.randint(1, 3),
+        "task": 3,
+        "time": curr_time,
+        "city_seed": random.randint(100, 10000),
+        "skip_frame": 0,
+        "height": 1028,
+        "width": 2024,
+        "night_mode":night,
+        "pedestrian_distracted_percent": 0,
+        "pedestrian_density": 0,
+        "weather_condition": weather,
+        "road_type": road_type,
+        "black_and_white": 0
     }
 
     if config:
