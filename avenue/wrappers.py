@@ -5,6 +5,36 @@ import numpy as np
 import os
 
 
+class ConcatComplex(gym.ObservationWrapper):
+
+    def __init__(self, env, observation_dict):
+        """
+
+        :param env:
+        :param observation_dict: This is a dict of str to a list of strings
+        """
+        super().__init__(env)
+        self.observation_space = spaces.Dict({})
+        for k,v in observation_dict.items():
+            shapes = [box.shape for box in env.observation_space.spaces.values()]
+#            self.observation_space.spaces[k] =
+
+
+
+    def observation(self, m):
+        return np.concatenate((m, self.action))
+
+    def reset(self, **kwargs):
+        self.action = np.zeros(self.action_space.shape, np.float32)
+        return super().reset(**kwargs)
+
+    def step(self, action):
+        da = self.alpha * np.asarray(action, dtype=np.float32)
+        # self.action = (1-self.alpha) * self.action + da
+        action = self.action + da
+        self.action = np.clip(action, -1, 1)
+        return super().step(self.action)
+
 class DifferentialActions(gym.ObservationWrapper):
     action = None
 
