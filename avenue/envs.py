@@ -147,7 +147,6 @@ def Climate(config=None, climat_change=False, **kwargs):
     else:
         curvature = 0
 
-
     # Randomize config here
     old_config = {
         "road_length": 500,
