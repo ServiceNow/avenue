@@ -14,30 +14,29 @@ class ConcatComplex(gym.ObservationWrapper):
         :param observation_dict: This is a dict of str to a list of strings
         """
         super().__init__(env)
+        self.observation_dict = observation_dict
         self.observation_space = spaces.Dict({})
-        for k,v in observation_dict.items():
-            shapes = [box.shape for box in env.observation_space.spaces.values()]
-#            self.observation_space.spaces[k] =
+        for k, v in observation_dict.items():
+            assert all(name in env.observation_space.spaces.keys() for name in v), \
+                f"All values in {v} must be in {env.observation_space.spaces.keys()}"
+            shapes, lows, highs, dtypes = zip(*[(box.shape, box.low, box.high, box.dtype) for name, box in env.observation_space.spaces.items() if name in v])
+            low = lows[0].flatten()[0]
+            high = highs[0].flatten()[0]
+            shapes_dim = [s[:-1] for s in shapes]
+            assert all(s == shapes_dim[0] for s in shapes_dim), "All dimensions must match!"
+            assert all(all(s.flatten() == low) for s in lows), "All low must match!"
+            assert all(all(s.flatten() == high) for s in highs), "All high must match!"
+            assert all(s == dtypes[0] for s in dtypes), f"All dtypes must match!{dtypes}"
 
+            new_shape = shapes_dim[0] + (sum(s[-1] for s in shapes),)
+            self.observation_space.spaces[k] = spaces.Box(low=low, high=high, dtype=dtypes[0],shape= new_shape)
 
+    def observation(self, state):
+        return {k: np.concatenate([x for name, x in state.items() if name in v], axis=-1) for k, v in self.observation_dict.items()}
 
-    def observation(self, m):
-        return np.concatenate((m, self.action))
-
-    def reset(self, **kwargs):
-        self.action = np.zeros(self.action_space.shape, np.float32)
-        return super().reset(**kwargs)
-
-    def step(self, action):
-        da = self.alpha * np.asarray(action, dtype=np.float32)
-        # self.action = (1-self.alpha) * self.action + da
-        action = self.action + da
-        self.action = np.clip(action, -1, 1)
-        return super().step(self.action)
 
 class DifferentialActions(gym.ObservationWrapper):
     action = None
-
     def __init__(self, env, alpha=0.2):
         super().__init__(env)
         self.alpha = alpha
