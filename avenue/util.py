@@ -48,6 +48,7 @@ class namedtuple(tuple):
       fields = tuple(n for n in vars(cls) if not n.startswith('__'))
       cls._nt = collections.namedtuple(cls.__name__, annots + fields)
       cls._nt.__new__.__defaults__ = tuple(vars(cls)[f] for f in fields)
+
     def __new__(cls, *args, **kwargs):
       return cls._nt(*args, **kwargs)
 
