@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 
-class ConcatComplex(gym.ObservationWrapper):
+class ConcatMulti(gym.ObservationWrapper):
 
     def __init__(self, env, observation_dict):
         """
