@@ -92,37 +92,60 @@ Or if you want to access it in the state as a vector (not as a dictionary), you 
 ```
 
 #### Visual state
-It depend on the environment and it's specified for each environment which input(s) are available.
-The visual states are all concatenated in the 3rd dimension, in this order:
+Depending of which class your environment inherit, the state will contains no visual informations,
+rgb, segmentation or both:
 
-| Name                            | Dimension number|
-| :-----------:                   |:----:|
-|Grayscale|1|
-|RGB|3|
-|Depth|1|
-|Segmentation|1|
-
+| Inherited class|visual state type|
+| :-----------:|:----:|
+|AvenueEnv| No visual information|
+|RgbAvenueEnv|state is an np.array of size (width, height, 3)|
+|SegmentationAvenueEnv|state is an np.array of size (width, height, 1)|
+|AllStatesAvenueEnv|Rgb is in state["visual"]["rgb"], segmentation is in state["visual"]["segmentation"], vector state in state["vector"]|
 ### Environments
-| Name |Action space|RGB   |Greyscale|Segmentation|Depth|Visual dimensions|Description|Additional vector state(s)| Reward |
-| :---:|:----------:|:----:|:-------:|:----------:|:---:|:--------:|:---------:|:---------------------------:|:---:|
-| Circuit_v1|Continuous action space|:x:|:heavy_check_mark:|:x:|:x:|64 x 256|Simple track.|None|Default|
-| ScenarioZoom_v1|None action space|:x:|:heavy_check_mark:|:x:|:x:|600 x 400|Zoom project.|See Details below.|See Details below.|
+| Name |Action space|Inherited type |Description|Additional vector state(s)| Reward |
+| :---:|:----------:|:----:|:-------:|:---------------------------:|:---:|
+| AvenueContinuous_v1|Continuous action space|AllStatesAvenueEnv||Go as fast as possible on the given road.|Default|
 
-### Details
-#### *ScenarioZoom_v1*
-##### Reward
-| Name | Weight | Description | Sign |
-|:---: | :----: | :---------: | :---:|
+### Configure the environment
 
+When you do ```avenue.make(env_name)``` you have the possibility to configure many element of the environments,
+to change the configuration of you environments you can just pass the config as a named argument in the ``avenue.make``
+method. For example:
 
-##### Additional state
-| Name                            | Description  | Size |
-| :-----------:                   |:------------ |:----:|
-|object_distance | Distance of the object to detect in Unity metrics (close to meter). | 1|
-|object_class | Class of the object to detect. [0 : Box, 1: Ball, 2: Trash]| 1|
+```
+config = {
+            "curvature" : 300, 
+            "lane_number": 4, 
+            "road_length": 1000, 
+            "weather_condition": 1, 
+            "vehicle_types": 0, 
+            "time" : 20, 
+            "city_seed" : 20, 
+            "night_mode" : 1
+        }
+        
+env = avenue.make("AvenueContinuous_v1", config = config)
+```
+
+#### Elements of the environment that you can control
+
+| Name | Description | Range | Content |
+|:---: | :----: | :---------: | :-------------------:|
+|weather_condition | Control the weather with predefined settings. | [0 - 4] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Storm </li> </ul> |
+|lane_number| Number of lanes. | [1- 12]||
+|road_length| Length of the road in meter. | [200-2000]||
+|night_mode| Tell if the light are activated or not. | [0-1]| <ul><li>0 : Lights off</li><li> 1: Lights on</li></ul>|
+|time| Time of the day (hour only) | [0-23]||
+|curvature| Curvature of the road. | [-1000 - 1000]||
+|starting_speed| Starting speed of the car. | [0 - 100]||
+|vehicle_types| Vehicle type. | [0 - 1]|<ul><li>0: Racing car</li><li>1: SUV</li></ul>|
+|City seed| Seed of the city. | [0 - 10000]||
+|Skip render frames| Number of frame to skip. | [0 - 100]||
+|Width| Desired width rendering. | [64 - 1024]||
+|Height| Desired height rendering. | [64 - 1024]||
+
+### Additional details for specific environments
 
 ### Demo
-#### *Circuit*
-![Alt text](../example/CircuitGreyscale.gif?raw=true "Title")
-#### *ScenarioZoom*
-![Alt text](../example/ScenarioZoom_v1.gif?raw=true "Title")
+#### *AvenueContinuous_v1*
+![Alt text](../example/AvenueContinuous_v1.gif?raw=true "Title")

@@ -10,14 +10,15 @@ setup(name='avenue',
       license='',
       zip_safe=False,
       install_requires=[
-            "gym_unity",
-            "gdown"
+            "gdown",
+            "mlagents==0.5.0",
+            "gym"
       ],
       setup_requires=[
-          "gym_unity",
-          "gdown"
+           "gdown",
+            "mlagents==0.5.0",
+            "gym"
       ],
       extras_require={},
-      dependency_links=['https://github.com/Unity-Technologies/ml-agents.git#egg=package-1.0'],
       packages=find_packages()
 )

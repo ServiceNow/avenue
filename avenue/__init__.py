@@ -3,6 +3,6 @@ from . import envs
 from . import wrappers
 
 
-def make(env_name):
-    env = getattr(envs, env_name)()
+def make(env_name, **kwargs):
+    env = getattr(envs, env_name)(**kwargs)
     return env

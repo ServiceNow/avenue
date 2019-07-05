@@ -18,9 +18,9 @@ class DifferentialActions(gym.ObservationWrapper):
     def observation(self, m):
         return np.concatenate((m, self.action))
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.action = np.zeros(self.action_space.shape, np.float32)
-        return super().reset()
+        return super().reset(**kwargs)
 
     def step(self, action):
         da = self.alpha * np.asarray(action, dtype=np.float32)
@@ -47,6 +47,49 @@ class DifferentialActionsVisual(DifferentialActions):
         return dict(m, vector=np.concatenate((m['vector'], self.action)))
 
 
+class DifferentialActionsFullState(gym.ObservationWrapper):
+    action = None
+
+    def __init__(self, env, alpha=0.2):
+        super().__init__(env)
+        self.alpha = alpha
+
+    def observation(self, m):
+        return m
+
+    def reset(self, **kwargs):
+        self.action = np.zeros(self.action_space.shape, np.float32)
+        return super().reset(**kwargs)
+
+    def step(self, action):
+        da = self.alpha * np.asarray(action, dtype=np.float32)
+        # self.action = (1-self.alpha) * self.action + da
+        action = self.action + da
+        self.action = np.clip(action, -1, 1)
+        return super().step(self.action)
+
+
+class BrakeDiscreteControl(gym.Wrapper):
+
+    def __init__(self, env):
+        super().__init__(env)
+        self.action_space = spaces.Discrete(2)
+
+    def reset(self, **kwargs):
+        ob = self.env.reset(**kwargs)
+        return ob["visual"]
+
+    def step(self, action):
+
+        new_action = np.zeros(3, np.float32)
+        if action  == 1:
+            new_action[2] = 1
+        elif action == 0:
+            new_action[2] = 0
+        ob, reward, done, info = super().step(new_action)
+        return ob["visual"], reward, done, info
+
+
 class ConcatVisualUnity(gym.Wrapper):
     def __init__(self, env):
         super().__init__(env)
@@ -63,8 +106,8 @@ class ConcatVisualUnity(gym.Wrapper):
         shp = env.observation_space.shape
         self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], nb_channel))
 
-    def reset(self):
-        ob = self.env.reset()
+    def reset(self, **kwargs):
+        ob = self.env.reset(**kwargs)
         ob, reward, done, info = self.step(self.action_space.sample())
         return np.concatenate(info["brain_info"].visual_observations, axis=3).squeeze(0)
 
@@ -79,9 +122,9 @@ class VideoSaver(gym.Wrapper):
         self._env = self.env
         self.video_buffer = deque(maxlen=10000)
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.video_buffer.clear()
-        ob = self.env.reset()
+        ob = self.env.reset(**kwargs)
         return ob
 
     def save_video(self, path="/tmp/gif_avenue.gif"):
@@ -93,3 +136,43 @@ class VideoSaver(gym.Wrapper):
         ob, reward, done, info = self.env.step(action)
         self.video_buffer.append((ob["visual"]))
         return ob, reward, done, info
+
+
+class WrapPyTorch(gym.ObservationWrapper):
+    def __init__(self, env=None):
+        super(WrapPyTorch, self).__init__(env)
+        obs_shape = self.observation_space.spaces["visual"].shape
+        new_shape = (obs_shape[2], obs_shape[1], obs_shape[0])
+        self.observation_space = spaces.Box(low=0, high=1, shape=new_shape, dtype=np.float32)
+
+    def observation(self, observation):
+        return observation.transpose(2, 0, 1)/255
+
+
+class MaxStep(gym.Wrapper):
+    def __init__(self, env, max_episode_steps=None):
+        super(MaxStep, self).__init__(env)
+        self._max_episode_steps = max_episode_steps
+        self._elapsed_steps = 0
+
+    def _past_limit(self):
+        """Return true if we are past our limit"""
+        if self._max_episode_steps is not None and self._max_episode_steps <= self._elapsed_steps:
+            return True
+
+        return False
+
+    def step(self, action):
+        observation, reward, done, info = self.env.step(action)
+        self._elapsed_steps += 1
+
+        if self._past_limit():
+            if self.metadata.get('semantics.autoreset'):
+                _ = self.reset() # automatically reset the env
+            done = True
+
+        return observation, reward, done, info
+
+    def reset(self, **kwargs):
+        self._elapsed_steps = 0
+        return self.env.reset(**kwargs)

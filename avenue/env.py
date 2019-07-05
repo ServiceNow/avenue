@@ -1,68 +1,28 @@
-import gym_unity.envs
+from avenue.gym_unity.envs import UnityEnv as GymUnityEnv
 import os
 import platform
 import zipfile
 import gdown
 import random
 import gym
-import numpy as np
 from gym import spaces
-from numpy.linalg import norm
-from .util import ensure_executable, namedtuple
-
-
-class AvenueState(namedtuple):
-    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
-    waypoint_1 = 2
-    waypoint_2 = 2
-    waypoint_3 = 2
-    waypoint_4 = 2
-    velocity_magnitude = 1
-    angle_to_next_waypoint_in_degrees = 1
-    horizontal_force = 1
-    vertical_force = 1
-    velocity = 3
-    top_speed = 1
-    ground_col = 1
-    collide_car = 1
-    collide_pedestrian = 1
-    position = 3
-    forward = 3
-    closest_waypoint = 3
-
-
-
-class AvenueStateZoom(namedtuple):
-    waypoint_0 = 2  # TODO: waypoints are relative but should be absolute
-    waypoint_1 = 2
-    waypoint_2 = 2
-    waypoint_3 = 2
-    waypoint_4 = 2
-    velocity_magnitude = 1
-    angle_to_next_waypoint_in_degrees = 1
-    horizontal_force = 1
-    vertical_force = 1
-    velocity = 3
-    top_speed = 1
-    ground_col = 1
-    collide_car = 1
-    collide_pedestrian = 1
-    position = 3
-    forward = 3
-    closest_waypoint = 3
-    object_distance = 1
-    object_class = 1
+import numpy as np
+from .util import ensure_executable, asset_id, asset_path
+from avenue.avenue_states import *
 
 
 class UnityEnv(gym.Wrapper):
+    """
+        Base class for avenue gym wrapper and automatic download.
+    """
     host_ids: dict
     visual: bool = False
     asset_name: str
 
-    def __init__(self):
-        seed = random.randint(10000, 20000)
+    def __init__(self, config=None, seed=0):
         system = platform.system().lower()
 
+        # Check if the binary is missing, in this can download it.
         if self.asset_name is not None:
 
             id_asset = asset_id(self.asset_name, platform.system())
@@ -74,7 +34,8 @@ class UnityEnv(gym.Wrapper):
 
         path = os.path.join(path_asset, id_asset)
         ensure_executable(path)
-        env = gym_unity.envs.UnityEnv(environment_filename=path, worker_id=seed, use_visual=self.visual)
+        env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(0, 10000))
+        env.reset(config)
         super().__init__(env)
     
     def download_assets(self, path):
@@ -92,44 +53,47 @@ class UnityEnv(gym.Wrapper):
         os.remove(path + '.zip')
         print("Unpacked !")
 
-    def reset(self):
-        return self.env.reset()
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)
     
     def step(self, a):
         return self.env.step(a)
 
 
-def asset_id(name, system):
-    system = system.lower()
-    assert system in ['windows', 'darwin', 'linux'], 'only windows, linux, mac are supported'
-    path = '{}-{}'.format(name, system)
-    return path
-
-def asset_path(asset_id):
-    project_root = os.path.dirname(os.path.dirname(__file__))
-    default_path = os.path.join(project_root, 'unity_assets')
-    dir = os.environ.get('AVENUE_ASSETS', default_path)
-    path = os.path.join(dir, asset_id)
-    return path
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-
 class AvenueEnv(UnityEnv):
+    """
+        Avenue env with vector state return.
+    """
     StateType = AvenueState
     state: AvenueState = None
 
-    def __init__(self):
-        super().__init__()
-        state_dims = self.StateType()
+    def __init__(self, **kwargs):
+
+        super().__init__(**kwargs)
+        state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i+1]) for i in range(len(state_dims)-1)]
-        self.observation_space = spaces.Box(-1, 1, (sum(state_dims),), np.float32)
-        # TODO: make observation space tuple (and create a wrapper to convert it into a vector)
+
+        self.env.reset()
+
+        # Get the info to find the resolutions and number of camera
+        _, _, _, info = self.env.step(self.env.action_space.sample())
+
+        # Since we change the resolution in the config we need to find the new visual observations spaces (rgb,
+        # segmentation).
+        self.observation_space = spaces.Dict(dict(
+            vector=spaces.Box(-1, 1, (sum(state_dims),)),
+            visual=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),
+            segmentation=spaces.Box(0, 255, (info["brain_info"].visual_observations[0].shape[1],
+                                             info["brain_info"].visual_observations[0].shape[2],
+                                             1))
+        ))
+
+        self.last_horizontal_error = 0
 
     def reset(self, **kwargs):
-        _ = self.env.reset()
-        m, _, _, _ = self.step(self.action_space.sample())  # we need to step to get info
+        _ = self.env.reset(**kwargs)
+        m, _, _, info = self.step(self.action_space.sample())  # we need to step to get info
+
         return m
 
     def step(self, a):
@@ -142,14 +106,12 @@ class AvenueEnv(UnityEnv):
         vec_obs, = info['brain_info'].vector_observations
         vec_obs = np.asarray(vec_obs, dtype=np.float32)
 
-        self.state = self.StateType(*np.split(vec_obs, self.state_idx))
-
+        self.state = globals()[self.vector_state_class](*np.split(vec_obs, self.state_idx))
         reward = self.compute_reward(self.state, r, d)
-
         done = self.compute_terminal(self.state, r, d)
 
-        info = dict(info, reset=False)  # reset=False, i.e. all dones are true terminals
-        return vec_obs, reward, done, info 
+        info = dict(info, reset=False, avenue_state=self.state)  # reset=False, i.e. all dones are true terminals
+        return vec_obs, reward, done, info
 
     def compute_terminal(self, s, r, d):
         return d
@@ -157,55 +119,47 @@ class AvenueEnv(UnityEnv):
     def compute_reward(self, s, r, d):
         return r
 
+    def pid_action(self, s):
+        theta = (s["vector"].angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi)
+        horizontal_error =  s["vector"].horizontal_force - theta
+        horizontal_force = 0.76 * horizontal_error  +  0.5 * (horizontal_error - self.last_horizontal_error)
+        vertical_force = random.random()
+        brake_force = 0
+        self.last_horizontal_error = horizontal_error
+        return np.array([vertical_force, horizontal_force, brake_force])
+
 
 class AllStatesAvenueEnv(AvenueEnv):
+    """
+        Avenue env with vector state return, rgb and segmentation.
+    """
     visual = True
 
-    def __init__(self):
-        super().__init__()
-        self.observation_space = spaces.Dict(dict(
-            vector=spaces.Box(-1, 1, (1,), np.float32),
-            visual=spaces.Box(0, 255, self.env.observation_space.shape, np.uint8)
-        ))
-
     def step(self, a):
-        _, r, d, info = super().step(a)
-        (vis_obs,), = info['brain_info'].visual_observations
-        vis_obs = (255 * vis_obs).astype(np.uint8)
-        m = dict(vector=np.asarray(self.state.velocity_magnitude / self.state.top_speed), visual=vis_obs)
+        s, r, d, info = super().step(a)
+        s = globals()[self.vector_state_class](*np.split(s, self.state_idx))
+        # Put each channel as a key of a dictionnary for visual observations
+        visual_obs = dict(rgb=info["brain_info"].visual_observations[0].squeeze(0),
+                          segmentation=info["brain_info"].visual_observations[1].squeeze(0))
+        visual_obs["rgb"] = (255 * visual_obs["rgb"]).astype(np.uint8)
+        visual_obs["segmentation"] = (255 * visual_obs["segmentation"]).astype(np.uint8)
+        m = dict(vector=s, visual=visual_obs)
         return m, r, d, info
 
 
-class RoundcourseEnv(AllStatesAvenueEnv):
-    def compute_terminal(self, s, r, d):
-        # return s.collide_car or s.collide_pedestrian  # TODO: what else?
-        return d
-
-    def compute_reward(self, s: AvenueState, r, d):
-        """ Partially inspired by https://yanpanlau.github.io/2016/10/11/Torcs-Keras.html
-        """
-        theta = s.angle_to_next_waypoint_in_degrees / 360 * 2 * np.pi
-
-        normalized_velocity = min(s.velocity_magnitude / s.top_speed, 1)
-
-        r = 0.
-        # r += 0.2 * normalized_velocity
-
-        r += 1. * np.cos(theta) * normalized_velocity
-
-        r -= 1. * np.abs(np.sin(theta) * normalized_velocity)
-        r, = r
-
-        return r
-
-
-class VisualAvenueEnv(AllStatesAvenueEnv):
-    def __init__(self):
-        super().__init__()
-        self.observation_space = self.observation_space.spaces["visual"]
+class RgbAvenueEnv(AllStatesAvenueEnv):
 
     def step(self, a):
         _, r, d, info = super().step(a)
-        (vis_obs,), = info['brain_info'].visual_observations
-        vis_obs = (255 * vis_obs).astype(np.uint8)
+        (vis_obs,), = info['brain_info'].visual_observations[0]
+        vis_obs = (255 * vis_obs).astype(np.int8)
+        return vis_obs, r, d, info
+
+
+class SegmentationAvenueEnv(AllStatesAvenueEnv):
+
+    def step(self, a):
+        _, r, d, info = super().step(a)
+        (vis_obs,), = info['brain_info'].visual_observations[1]
+        vis_obs = (255 * vis_obs).astype(np.int8)
         return vis_obs, r, d, info
