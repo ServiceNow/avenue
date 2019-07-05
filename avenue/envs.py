@@ -43,5 +43,5 @@ def DriveAndAvoidPedestrians(config=None, **kwargs):
     }
 
     env = AvenueCar(config=dict(old_config, **config) if config else old_config, **kwargs)
-    env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude"]})
+    env = ConcatMulti(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude"]})
     return env

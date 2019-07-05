@@ -19,7 +19,7 @@ class UnityEnv(gym.Wrapper):
     visual: bool = False
     asset_name: str
 
-    def __init__(self, config=None, seed=0):
+    def __init__(self, config=None):
         system = platform.system().lower()
 
         # Check if the binary is missing, in this can download it.
