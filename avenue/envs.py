@@ -3,22 +3,8 @@ from .wrappers import *
 import random
 
 """
-This file give the ability to register new environments. Given the inherited class, you will have different classes of
+This file give the ability to create new environments. Given the inherited class, you will have different classes of
 input.
-
-AvenueEnv: 
-    return the state as a vector of class vector_state_class
-
-RgbAvenueEnv:
-    return the state as an rgb image.
-
-SegmentationAvenueEnv:
-    return the state as a segmentation of the scene.
-
-AllStatesAvenue: 
-    return the state as a dict composed of a vector entry with the vector state, and a visual that have
-    an rgb image and segmentation.
-
 
 host_ids: give the google drive links id given the os.
 
