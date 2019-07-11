@@ -17,12 +17,13 @@ pip install -e .
 
 ```python
 import avenue
-env = avenue.make("AvenueContinuous_v1")
+env = avenue.make("DriveAndAvoidPedestrian")
 state = env.reset()
 for i in range(0, 1000):
     state, reward, done, info = env.step(env.action_space.sample())
 ```
 
 ## Documentation
-[Dataset creation and loading](docs/DATASET.md)
-[Documentation of available environments](docs/ENVIRONMENTS.md)
+[Dataset creation and loading](docs/DATASET.md) \
+[Documentation of available environments](docs/ENVIRONMENTS.md) \
+[How to create an environment](avenue/envs.py)
