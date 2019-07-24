@@ -10,9 +10,13 @@ def ensure_executable(bin):
     import stat
     for ext in ['x86', 'x86_64']:
         filename = bin + '.' + ext
-        if os.path.exists(filename):
-          st = os.stat(filename)
-          os.chmod(filename, st.st_mode | stat.S_IEXEC)
+        # if exists and is not executable try to make executable
+        if os.path.isfile(filename) and not os.access(filename, os.X_OK):
+          try:
+            st = os.stat(filename)
+            os.chmod(filename, st.st_mode | stat.S_IEXEC)
+          except PermissionError:
+            print(f"No permission to make {filename} executable")
 
 
 def asset_id(name, system):
