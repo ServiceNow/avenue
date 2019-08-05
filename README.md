@@ -1,23 +1,18 @@
 # AVENUE Simulator
 
-AVENUE Simulator is a simulator based on Unity 3D game engine designed to test reinforcement learning algorithm, imitation learning and to collect data.
+AVENUE is a simulator based on the Unity 3D game engine designed to test reinforcement learning algorithms, for imitation learning and to collect data.
 ![Alt text](images/AVENUE.jpg?raw=true "Title")
 
 ## Installation
 ```bash
-# clone repository
-git clone https://github.com/cyrilibrahim/Avenue.git 
-
-# install avenue
-cd Avenue
-pip install -e .
+pip install git+https://github.com/ElementAI/Avenue.git 
 ```
 
 ## Quick start
 
 ```python
 import avenue
-env = avenue.make("DriveAndAvoidPedestrian")
+env = avenue.make("DriveAndAvoidPedestrians")
 state = env.reset()
 for i in range(0, 1000):
     state, reward, done, info = env.step(env.action_space.sample())

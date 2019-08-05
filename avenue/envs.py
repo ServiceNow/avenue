@@ -28,7 +28,7 @@ class AvenueCarDev(BaseAvenue):
     vector_state_class = "AvenueState"
 
 
-def DriveAndAvoidPedestrian(config=None, **kwargs):
+def DriveAndAvoidPedestrians(config=None, **kwargs):
     # Randomize config here
     old_config = {
         "road_length": 500,
