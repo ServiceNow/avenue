@@ -15,14 +15,20 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 TODO: doc overwrite reward etc.
 """
 
+
 class AvenueCar(BaseAvenue):
     host_ids = {'linux': '1c5s_HhWSEmwm1JbP7tyy6V252zYVPl25'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
 
-def DriveAndAvoidPedestrian(config=None, **kwargs):
+class AvenueCarDev(BaseAvenue):
+    host_ids = {'linux': '1eAAA-N0lO8SuXRGeCDNHgCTJX0ASfWof'}
+    asset_name = 'avenue_continuous_dev'
+    vector_state_class = "AvenueState"
 
+
+def DriveAndAvoidPedestrian(config=None, **kwargs):
     # Randomize config here
     old_config = {
         "road_length": 500,

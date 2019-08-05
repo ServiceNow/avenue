@@ -55,8 +55,7 @@ class DifferentialActions(gym.ObservationWrapper):
 
     def step(self, action):
         da = self.alpha * np.asarray(action, dtype=np.float32)
-        # self.action = (1-self.alpha) * self.action + da
-        action = self.action + da
+        self.action = (1-self.alpha) * self.action + da
         self.action = np.clip(action, -1, 1)
         return super().step(self.action)
 
