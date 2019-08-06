@@ -12,6 +12,7 @@ class AvenueState(namedtuple):
     horizontal_force = 1
     vertical_force = 1
     velocity = 3
+    angular_velocity = 3
     top_speed = 1
     ground_col = 1
     collide_car = 1

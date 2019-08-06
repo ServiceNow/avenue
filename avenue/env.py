@@ -9,7 +9,7 @@ from gym import spaces
 import numpy as np
 from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
-
+import math
 
 class UnityEnv(gym.Wrapper):
     """
@@ -195,7 +195,14 @@ class BaseAvenue(UnityEnv):
         return d
 
     def compute_reward(self, s, r, d):
+        theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
+        velocity_magnitude = s.velocity_magnitude[0]
+        top_speed = s.top_speed[0]
+        r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude/top_speed)) + 1
+        print(r)
+
         return r
+
 
 
 class RgbAvenueEnv(AllStatesAvenueEnv):

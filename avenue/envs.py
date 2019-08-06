@@ -1,6 +1,7 @@
 from .env import *
 from .wrappers import *
 import random
+import math
 
 """
 This file give the ability to create new environments. Given the inherited class, you will have different classes of
@@ -47,6 +48,6 @@ def DriveAndAvoidPedestrians(config=None, **kwargs):
     }
 
     env = AvenueCar(config=dict(old_config, **config) if config else old_config, **kwargs)
-    env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude"]})
+    env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
     return env
 
