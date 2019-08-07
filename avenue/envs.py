@@ -29,25 +29,33 @@ class AvenueCarDev(BaseAvenue):
     vector_state_class = "AvenueState"
 
 
-def DriveAndAvoidPedestrians(config=None, **kwargs):
+"""
+    Example of created environment where you have to drive while avoiding pedestrians.
+"""
+
+
+def PedestrianAvoidance(config=None, **kwargs):
     # Randomize config here
     old_config = {
-        "road_length": 500,
+        "road_length": 800,
         "curvature": 0,
-        "lane_number": 2,
+        "lane_number": 3,
         "task": 0,
         "time": 13,
         "city_seed": 211,
-        "skip_frame": 8,
-        "height": 64,
-        "width": 256,
+        "skip_frame": 6,
+        "height": 368,
+        "width": 368,
         "night_mode":False,
         "pedestrian_distracted_percent": 0.5,
         "pedestrian_density": 50,
-        "weather_condition": 0
+        "weather_condition": 5,
+        "no_decor": 0,
+        "top_speed": 15 # m/s approximately 50 km / h
     }
-
-    env = AvenueCar(config=dict(old_config, **config) if config else old_config, **kwargs)
+    env = AvenueCarDev(config=dict(old_config, **config) if config else old_config, **kwargs)
     env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
+
+    env = MaxStep(env, max_episode_steps=500)
     return env
 

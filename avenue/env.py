@@ -199,25 +199,4 @@ class BaseAvenue(UnityEnv):
         velocity_magnitude = s.velocity_magnitude[0]
         top_speed = s.top_speed[0]
         r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude/top_speed)) + 1
-        print(r)
-
         return r
-
-
-
-class RgbAvenueEnv(AllStatesAvenueEnv):
-
-    def step(self, a):
-        _, r, d, info = super().step(a)
-        (vis_obs,), = info['brain_info'].visual_observations[0]
-        vis_obs = (255 * vis_obs).astype(np.int8)
-        return vis_obs, r, d, info
-
-
-class SegmentationAvenueEnv(AllStatesAvenueEnv):
-
-    def step(self, a):
-        _, r, d, info = super().step(a)
-        (vis_obs,), = info['brain_info'].visual_observations[1]
-        vis_obs = (255 * vis_obs).astype(np.int8)
-        return vis_obs, r, d, info
