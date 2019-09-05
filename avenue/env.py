@@ -11,7 +11,6 @@ from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
 import math
 
-
 class UnityEnv(gym.Wrapper):
     """
         Base class for avenue gym wrapper and automatic download.
@@ -109,8 +108,37 @@ class BaseAvenue(UnityEnv):
         return d
 
     def compute_reward(self, s, r, d):
+        print(r)
+        return r
+
+
+class LaneFollowing(BaseAvenue):
+    """
+        Avenue env with vector state return, rgb and segmentation.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def compute_reward(self, s, r, d):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
         velocity_magnitude = s.velocity_magnitude[0]
         top_speed = s.top_speed[0]
         r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude/top_speed)) + 1
+        return r
+
+
+class UnboundedLaneFollowing(BaseAvenue):
+    """
+        Avenue env with vector state return, rgb and segmentation.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def compute_reward(self, s, r, d):
+        theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
+        velocity_magnitude = s.velocity_magnitude[0]
+        top_speed = s.top_speed[0]
+        r = (math.cos(theta) * velocity_magnitude/top_speed)
         return r

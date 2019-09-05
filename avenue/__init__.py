@@ -1,4 +1,3 @@
-from .env import AvenueEnv
 from . import envs
 from . import wrappers
 
