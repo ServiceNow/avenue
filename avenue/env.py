@@ -108,7 +108,6 @@ class BaseAvenue(UnityEnv):
         return d
 
     def compute_reward(self, s, r, d):
-        print(r)
         return r
 
 
