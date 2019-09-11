@@ -28,20 +28,19 @@ class AvenueCarDev(BaseAvenue):
 
 
 class UnboundedLaneFollowing(UnboundedLaneFollowing):
-    host_ids = {'linux': '1eAAA-N0lO8SuXRGeCDNHgCTJX0ASfWof'}
-    asset_name = 'avenue_continuous_dev'
+    host_ids = {'linux': '1jNfgYwDh1NHiTuxpVaWsQmvmR8VxJGiA'}
+    asset_name = 'avenue_continuous_new_vehicle'
     vector_state_class = "AvenueState"
 
 
 class LaneFollowingDev(LaneFollowing):
-    host_ids = {'linux': '1eAAA-N0lO8SuXRGeCDNHgCTJX0ASfWof'}
+    host_ids = {'linux': '1jNfgYwDh1NHiTuxpVaWsQmvmR8VxJGiA'}
     asset_name = 'avenue_continuous_new_vehicle'
     vector_state_class = "AvenueState"
 
 """
     Example of created environment where you have to drive while avoiding pedestrians.
 """
-
 
 def PedestrianAvoidance(config=None, **kwargs):
     # Randomize config here
