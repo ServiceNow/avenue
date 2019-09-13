@@ -11,36 +11,44 @@ asset_name: refer to the right binary folder in unity_assets.
  
 vector_state_class: refer to the type of vector that we want. (see in avenue_states.py)
 
-TODO: doc overwrite reward etc.
 """
 
-
-class AvenueCar(BaseAvenue):
-    host_ids = {'linux': '1c5s_HhWSEmwm1JbP7tyy6V252zYVPl25'}
+class AvenueCar_v0(BaseAvenue):
+    host_ids = {'linux': '1aXpNIVvAsK3-8ByAPvRD1gtcypIp39Zz'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
 
 
 class AvenueCarDev(BaseAvenue):
-    host_ids = {'linux': '1eAAA-N0lO8SuXRGeCDNHgCTJX0ASfWof'}
-    asset_name = 'avenue_continuous_dev'
-    vector_state_class = "AvenueState"
-
-
-class UnboundedLaneFollowing(UnboundedLaneFollowing):
     host_ids = {'linux': '1jNfgYwDh1NHiTuxpVaWsQmvmR8VxJGiA'}
-    asset_name = 'avenue_continuous_new_vehicle'
-    vector_state_class = "AvenueState"
-
-
-class LaneFollowingDev(LaneFollowing):
-    host_ids = {'linux': '1jNfgYwDh1NHiTuxpVaWsQmvmR8VxJGiA'}
-    asset_name = 'avenue_continuous_new_vehicle'
+    asset_name = 'avenue_with_traffic'
     vector_state_class = "AvenueState"
 
 """
     Example of created environment where you have to drive while avoiding pedestrians.
 """
+
+
+
+
+class LaneFollowing(AvenueCar_v0):
+    def lane_following_reward(self, s, r, d):
+        theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
+        velocity_magnitude = s.velocity_magnitude[0]
+        top_speed = s.top_speed[0]
+        r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude / top_speed)) + 1
+        return r
+
+
+class UnboundedLaneFollowing(AvenueCar_v0):
+
+    def compute_reward(self, s, r, d):
+        theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
+        velocity_magnitude = s.velocity_magnitude[0]
+        top_speed = s.top_speed[0]
+        r = (math.cos(theta) * velocity_magnitude/top_speed)
+        return r
+
 
 def PedestrianAvoidance(config=None, **kwargs):
     # Randomize config here
@@ -61,8 +69,7 @@ def PedestrianAvoidance(config=None, **kwargs):
         "no_decor": 0,
         "top_speed": 21  # m/s approximately 50 km / h
     }
-    env = LaneFollowingDev(config=dict(old_config, **config) if config else old_config, **kwargs)
+    env = LaneFollowing(config=dict(old_config, **config) if config else old_config, **kwargs)
     env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
-
     env = MaxStep(env, max_episode_steps=500)
     return env
