@@ -22,6 +22,28 @@ class AvenueState(namedtuple):
     closest_waypoint = 3
 
 
+class FollowCar(namedtuple):
+    waypoint_0 = 2
+    waypoint_1 = 2
+    waypoint_2 = 2
+    waypoint_3 = 2
+    waypoint_4 = 2
+    velocity_magnitude = 1
+    angle_to_next_waypoint_in_degrees = 1
+    horizontal_force = 1
+    vertical_force = 1
+    velocity = 3
+    angular_velocity = 3
+    top_speed = 1
+    ground_col = 1
+    collide_car = 1
+    collide_pedestrian = 1
+    position = 3
+    forward = 3
+    closest_waypoint = 3
+    follow_car_pos = 3
+
+
 class Humanware(namedtuple):
     house_number = 1
     height = 1
