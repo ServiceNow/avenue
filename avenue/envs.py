@@ -20,7 +20,7 @@ class AvenueCar_v0(BaseAvenue):
 
 
 class AvenueCarDev(BaseAvenue):
-    host_ids = {'linux': '1jNfgYwDh1NHiTuxpVaWsQmvmR8VxJGiA'}
+    host_ids = {'linux': '1aXpNIVvAsK3-8ByAPvRD1gtcypIp39Zz'}
     asset_name = 'avenue_with_traffic'
     vector_state_class = "AvenueState"
 
