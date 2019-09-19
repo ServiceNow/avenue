@@ -50,7 +50,6 @@ class FollowCar(AvenueCarDev):
 
     def compute_reward(self, s, r, d):
         reward = 1 - (self.get_distance_car_to_follow(s) / self.max_distance_reward)
-        print(reward)
         return reward
 
     def compute_terminal(self, s, r, d):
