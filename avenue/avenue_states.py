@@ -42,6 +42,7 @@ class FollowCar(namedtuple):
     forward = 3
     closest_waypoint = 3
     follow_car_pos = 3
+    end_point = 3
 
 
 class Humanware(namedtuple):

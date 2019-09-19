@@ -44,16 +44,24 @@ class FollowCar(AvenueCarDev):
 
     vector_state_class = "FollowCar"
 
-    def get_distance_car_to_follow(self, s):
-        return np.sqrt(np.sum((s.follow_car_pos - s.position)**2))
+    def __init__(self, max_distance_reward, **kwargs):
+        super().__init__(**kwargs)
+        self.max_distance_reward = max_distance_reward
 
     def compute_reward(self, s, r, d):
-        reward = 1 - self.get_distance_car_to_follow(s) / 60
+        reward = 1 - (self.get_distance_car_to_follow(s) / self.max_distance_reward)
+        print(reward)
         return reward
 
     def compute_terminal(self, s, r, d):
-        new_done = self.get_distance_car_to_follow(s) > 60
-        return d or new_done
+        # Car arrive at destination
+        return self.get_3d_distance(s.follow_car_pos, s.end_point) < 30
+
+    def get_distance_car_to_follow(self, s):
+        return self.get_3d_distance(s.follow_car_pos, s.position)
+
+    def get_3d_distance(self, v1, v2):
+        return np.sqrt(np.sum((v1 - v2)**2))
 
 
 def Drive(config=None, **kwargs):

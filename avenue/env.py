@@ -11,6 +11,7 @@ from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
 import math
 
+
 class UnityEnv(gym.Wrapper):
     """
         Base class for avenue gym wrapper and automatic download.
@@ -34,7 +35,7 @@ class UnityEnv(gym.Wrapper):
 
         path = os.path.join(path_asset, id_asset)
         ensure_executable(path)
-        env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(0, 10000))
+        env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(1000, 20000))
         env.reset(config)
         super().__init__(env)
 
