@@ -10,7 +10,11 @@ import numpy as np
 from .util import ensure_executable, asset_id, asset_path
 from avenue.avenue_states import *
 import math
+from enum import Enum
 
+class ControllerType(Enum):
+    CAR = 1
+    DRONE = 2
 
 class UnityEnv(gym.Wrapper):
     """
@@ -19,10 +23,10 @@ class UnityEnv(gym.Wrapper):
     host_ids: dict
     visual: bool = False
     asset_name: str
+    ctrl_type: ControllerType
 
     def __init__(self, config=None, seed=0):
         system = platform.system().lower()
-
         # Check if the binary is missing, in this can download it.
         if self.asset_name is not None:
 
@@ -66,12 +70,15 @@ class BaseAvenue(UnityEnv):
         Avenue env with vector state return, rgb and segmentation.
     """
     visual = True
+    drone = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         state_dims = globals()[self.vector_state_class]()
         self.state_idx = [sum(state_dims[:i + 1]) for i in range(len(state_dims) - 1)]
         self.env.reset()
+
+        #import pdb; pdb.set_trace()
 
         # Get the info to find the resolutions and number of camera
         _, _, _, info = self.env.step(self.env.action_space.sample())
@@ -102,7 +109,7 @@ class BaseAvenue(UnityEnv):
 
     def reset(self, **kwargs):
         _ = self.env.reset(**kwargs)
-        m, _, _, info = self.step(self.action_space.sample())  # we need to step to get info
+        m, _, _, info = self.step(self.env.action_space.sample())  # we need to step to get info
         return m
 
     def compute_terminal(self, s, r, d):
@@ -110,3 +117,17 @@ class BaseAvenue(UnityEnv):
 
     def compute_reward(self, s, r, d):
         return r
+
+
+class ReduceActionSpace(gym.Wrapper):
+    def __init__(self, env, action_dim):
+        super(ReduceActionSpace, self).__init__(env)
+        self.old_action_space = env.action_space
+        self.action_space = gym.spaces.Box(-1, 1, (action_dim,))
+
+    def step(self, action):
+        action_new_shape = np.zeros(self.old_action_space.shape[0])
+        return self.env.step(action_new_shape)
+
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)

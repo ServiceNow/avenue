@@ -44,7 +44,23 @@ class FollowCar(namedtuple):
     follow_car_pos = 3
     end_point = 3
     car_to_follow_forward = 1
+    is_car_visible = 1
 
+
+class Drone(namedtuple):
+    waypoint_0 = 2
+    waypoint_1 = 2
+    waypoint_2 = 2
+    waypoint_3 = 2
+    waypoint_4 = 2
+    velocity_magnitude = 1
+    angle_to_next_waypoint_in_degrees = 1
+    velocity = 3
+    angular_velocity = 3
+    position = 3
+    forward = 3
+    euler_angles = 3
+    closest_waypoint = 3
 
 class Humanware(namedtuple):
     house_number = 1
