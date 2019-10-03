@@ -69,20 +69,28 @@ class FollowCar(AvenueCarDev):
     def __init__(self, max_distance_reward, **kwargs):
         super().__init__(**kwargs)
         self.max_distance_reward = max_distance_reward
+        self.counter_out_of_vision = 0
+
+    def reset(self, **kwargs):
+        self.counter_out_of_vision = 0
+        return super().reset(**kwargs)
 
     def compute_reward(self, s, r, d):
         reward = 1 - (self.get_distance_car_to_follow(s) / self.max_distance_reward)
         return reward
 
     def compute_terminal(self, s, r, d):
+        if s.is_car_visible == 0:
+            self.counter_out_of_vision += 1
         # Car arrive at destination
-        return self.get_3d_distance(s.follow_car_pos, s.end_point) < 30 or s.is_car_visible == False
+        return d or self.get_3d_distance(s.follow_car_pos, s.end_point) < 30 or self.counter_out_of_vision > 5
 
     def get_distance_car_to_follow(self, s):
         return self.get_3d_distance(s.follow_car_pos, s.position)
 
     def get_3d_distance(self, v1, v2):
         return np.sqrt(np.sum((v1 - v2)**2))
+
 
 
 def Drive(config=None, **kwargs):
@@ -123,10 +131,10 @@ def Drive(config=None, **kwargs):
         "car_number": random.randint(0, 40),
         "layout": layout,
         "done_unity": 1,
-        "starting_speed": random.randint(10, 50)
+        "starting_speed": random.randint(0, 10)
     }
 
     env = LaneFollowing(config=dict(old_config, **config) if config else old_config, **kwargs)
     env = DifferentialActions(ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]}))
-    env = MaxStep(env, max_episode_steps=100)
+    env = MaxStep(env, max_episode_steps=1000)
     return env

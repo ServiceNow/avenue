@@ -45,6 +45,7 @@ class FollowCar(namedtuple):
     end_point = 3
     car_to_follow_forward = 1
     is_car_visible = 1
+    dir_projection_car = 1
 
 
 class Drone(namedtuple):
