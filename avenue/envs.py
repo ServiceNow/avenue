@@ -14,21 +14,23 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 """
 
 
-class AvenueCar_v0(BaseAvenue):
+class AvenueCar_v0(BaseAvenueCtrl):
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_continuous'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
 
 
-class AvenueCarDev(BaseAvenue):
+
+
+class AvenueCarDev(BaseAvenueCtrl):
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
 
 
-class AvenueDroneDev(BaseAvenue):
+class AvenueDroneDev(BaseAvenueCtrl):
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "Drone"

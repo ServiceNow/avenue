@@ -21,7 +21,8 @@ class AvenueState(namedtuple):
     forward = 3
     closest_waypoint = 3
     diff_next_angle = 1
-
+    close_pedestrian = 1
+    close_car = 1
 
 class FollowCar(namedtuple):
     waypoint_0 = 2
@@ -43,6 +44,8 @@ class FollowCar(namedtuple):
     forward = 3
     closest_waypoint = 3
     diff_next_angle = 1
+    close_pedestrian = 1
+    close_car = 1
     follow_car_pos = 3
     end_point = 3
     car_to_follow_forward = 1

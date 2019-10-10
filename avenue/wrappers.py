@@ -56,8 +56,23 @@ class DifferentialActions(gym.ObservationWrapper):
     def step(self, action):
         da = self.alpha * np.asarray(action, dtype=np.float32)
         self.action = (1-self.alpha) * self.action + da
-        self.action = np.clip(action, -1, 1)
+        self.action = np.clip(self.action, -1, 1)
         return super().step(self.action)
+
+
+class ReduceActionSpace(gym.Wrapper):
+    def __init__(self, env, action_dim):
+        super(ReduceActionSpace, self).__init__(env)
+        self.old_action_space = env.action_space
+        self.action_space = gym.spaces.Box(-1, 1, (action_dim,))
+
+    def step(self, action):
+        action_new_shape = np.zeros(self.old_action_space.shape[0])
+        action_new_shape[0:self.action_space.shape[0]] = action
+        return self.env.step(action_new_shape)
+
+    def reset(self, **kwargs):
+        return self.env.reset(**kwargs)
 
 class VideoSaver(gym.Wrapper):
     def __init__(self, env):
