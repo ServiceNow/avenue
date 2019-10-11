@@ -5,6 +5,23 @@ import numpy as np
 import os
 
 
+class RandomizeWrapper(gym.Wrapper):
+    def __init__(self, env, compute_config, n=10):
+        super().__init__(env)
+        self.n = n
+        self.compute_config = compute_config
+        self.epsiodes = 0
+
+    def reset(self, **kwargs):
+        self.epsiodes += 1
+        if self.epsiodes % self.n == 0:
+            config = self.compute_config()
+            self.env.close()
+            self.env = self.env.__class__(config=config)
+
+        return self.env.reset()
+
+
 class ConcatComplex(gym.ObservationWrapper):
 
     def __init__(self, env, observation_dict):

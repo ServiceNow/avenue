@@ -1,4 +1,4 @@
-from avenue.gym_unity.envs import UnityEnv as GymUnityEnv
+from mlagents.gym_unity.envs.unity_env import UnityEnv as GymUnityEnv
 import os
 import platform
 import zipfile

@@ -11,13 +11,10 @@ setup(name='avenue',
       zip_safe=False,
       install_requires=[
             "gdown",
-            "mlagents==0.5.0",
-            "gym"
-      ],
-      setup_requires=[
-           "gdown",
-            "mlagents==0.5.0",
-            "gym"
+            # "mlagents==0.5.0",
+            "gym",
+            # "mlagents_frozen",
+            "mlagents @ git+ssh://git@github.com/rmst/ml-agents-frozen#egg=mlagents",
       ],
       extras_require={},
       packages=find_packages()

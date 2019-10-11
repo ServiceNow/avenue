@@ -42,101 +42,68 @@ class AvenueDroneDev(BaseAvenueCtrl):
 
 
 class LaneFollowing(AvenueCarDev):
+    def __init__(self, config):
+        super().__init__(config=dict(config, task=0))
 
     def compute_reward(self, s, r, d):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
         velocity_magnitude = s.velocity_magnitude[0]
         top_speed = s.top_speed[0]
-        r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude / top_speed)) + 1
+        r = (math.cos(theta) * velocity_magnitude) / top_speed
+        if s.close_car[0] == 1 or s.close_pedestrian[0] == 1:
+            r = 0
+        if d:
+            r = -40
         return r
 
     def compute_terminal(self, s, r, d):
         return d
 
 
-class DronePath(AvenueDroneDev):
+class AutoSpeed(gym.Wrapper):
+    def __init__(self, env, speed_target=28):
+        super(AutoSpeed, self).__init__(env)
+        self.speed_target = speed_target
+        self.action_space = gym.spaces.Box(-1, 1, (1,))
+        self.last_speed = 0
 
-    def compute_reward(self, s, r, d):
-        theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
-        velocity_magnitude = s.velocity_magnitude[0]
-        top_speed = 20
-        r = -math.fabs(1 - (math.cos(theta) * velocity_magnitude / top_speed)) + 1
-        return r
-
-
-class FollowCar(AvenueCarDev):
-
-    vector_state_class = "FollowCar"
-
-    def __init__(self, max_distance_reward, **kwargs):
-        super().__init__(**kwargs)
-        self.max_distance_reward = max_distance_reward
-        self.counter_out_of_vision = 0
+    def step(self, action):
+        calculated_speed = math.fabs((self.speed_target - self.last_speed) * 0.05)
+        brake = 0
+        action = np.array([calculated_speed, action[0]])
+        observation, reward, done, info = self.env.step(action)
+        self.last_speed = observation["vector"][3]
+        return observation, reward, done, info
 
     def reset(self, **kwargs):
-        self.counter_out_of_vision = 0
-        return super().reset(**kwargs)
-
-    def compute_reward(self, s, r, d):
-        reward = 1 - (self.get_distance_car_to_follow(s) / self.max_distance_reward)
-        return reward
-
-    def compute_terminal(self, s, r, d):
-        if s.is_car_visible == 0:
-            self.counter_out_of_vision += 1
-        # Car arrive at destination
-        return d or self.get_3d_distance(s.follow_car_pos, s.end_point) < 30 or self.counter_out_of_vision > 5
-
-    def get_distance_car_to_follow(self, s):
-        return self.get_3d_distance(s.follow_car_pos, s.position)
-
-    def get_3d_distance(self, v1, v2):
-        return np.sqrt(np.sum((v1 - v2)**2))
+        return self.env.reset(**kwargs)
 
 
+def LaneFollowingTrack():
+    def compute_config():
+        return dict(
+            lane_number=2,
+            task=0,
+            time=random.randint(8, 17),
+            city_seed=random.randint(0, 10000),
+            skip_frame=4,
+            height=368,
+            width=368,
+            night_mode=False,
+            road_type=1,
+            pedestrian_distracted_percent=random.random(),
+            pedestrian_density=0,
+            weather_condition=0,
+            no_decor=1,
+            top_speed=26,  # m/s approximately 50 km / h
+            car_number=0,
+            layout=1,
+            done_unity=1,
+            starting_speed=random.randint(0, 10)
+        )
 
-def Drive(config=None, **kwargs):
-    curr_time = random.randint(8, 21)
-    if curr_time > 18:
-        night = True
-    else:
-        night = False
-
-    if random.random() > 0.5:
-        weather = 0
-    else:
-        weather = 5
-
-    if random.random() > 0.6:
-        layout = 0
-    else:
-        layout = 1
-
-    # Randomize config here
-    old_config = {
-        "road_length": random.randint(100, 400),
-        "curvature": random.randint(0, 100),
-        "lane_number": random.randint(1, 4),
-        "task": 0,
-        "time": curr_time,
-        "city_seed": random.randint(0, 10000),
-        "skip_frame": 4,
-        "height": 368,
-        "width": 368,
-        "night_mode":night,
-        "road_type": random.randint(0, 4),
-        "pedestrian_distracted_percent": random.random(),
-        "pedestrian_density": random.randint(0, 3),
-        "weather_condition": weather,
-        "no_decor": 0,
-        "top_speed": 28,  # m/s approximately 50 km / h
-        "car_number": random.randint(0, 40),
-        "layout": layout,
-        "done_unity": 1,
-        "starting_speed": random.randint(0, 10)
-    }
-
-    env = LaneFollowing(config=dict(old_config, **config) if config else old_config, **kwargs)
-    env = DifferentialActions(ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]}))
+    env = LaneFollowing(config=compute_config())
+    env = RandomizeWrapper(env, compute_config)
+    env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
     env = MaxStep(env, max_episode_steps=1000)
     return env
