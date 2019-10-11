@@ -7,14 +7,16 @@ import random
 import gym
 from gym import spaces
 import numpy as np
-from .util import ensure_executable, asset_id, asset_path
+from .util import ensure_executable, compute_assed_id, compute_asset_path
 from avenue.avenue_states import *
 import math
 from enum import Enum
 
+
 class ControllerType(Enum):
     CAR = 1
     DRONE = 2
+
 
 class FakeActionSpace(gym.Wrapper):
     def __init__(self, env, action_dim):
@@ -32,7 +34,6 @@ class FakeActionSpace(gym.Wrapper):
         return self.env.reset(**kwargs)
 
 
-
 class UnityEnv(gym.Wrapper):
     """
         Base class for avenue gym wrapper and automatic download.
@@ -43,29 +44,25 @@ class UnityEnv(gym.Wrapper):
     ctrl_type: ControllerType
 
     def __init__(self, config=None, seed=0):
-        system = platform.system().lower()
-        # Check if the binary is missing, in this can download it.
-        if self.asset_name is not None:
-
-            id_asset = asset_id(self.asset_name, platform.system())
-            path_asset = asset_path(id_asset)
-            if not os.path.isdir(path_asset):
-                self.download_assets(path_asset)
-        else:
-            raise KeyError("There are no assets available for {} on {}".format(self.asset_name, system))
-
-        path = os.path.join(path_asset, id_asset)
-        ensure_executable(path)
+        path = self.get_assets()
         env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(1000, 20000))
         env.reset(config)
         super().__init__(env)
 
-    def download_assets(self, path):
+    @classmethod
+    def get_assets(cls):
+        assert cls.asset_name
+        asset_id = compute_assed_id(cls.asset_name, platform.system())
+        path = compute_asset_path(asset_id)
+        run_path = os.path.join(path, asset_id)
+        if os.path.isdir(path):
+            return run_path
+
         print('downloading', path + '.zip')
         system = platform.system().lower()
-        if system not in self.host_ids:
-            raise KeyError("There are no assets available for {} on {}".format(self.asset_name, system))
-        id = self.host_ids[system]
+        if system not in cls.host_ids:
+            raise KeyError("There are no assets available for {} on {}".format(cls.asset_name, system))
+        id = cls.host_ids[system]
         gdown.download("https://drive.google.com/uc?id="+id, path + ".zip", False)
         zip_ref = zipfile.ZipFile(path + '.zip', 'r')
         print('unpacking ...')
@@ -74,6 +71,8 @@ class UnityEnv(gym.Wrapper):
         assert os.path.isdir(path)
         os.remove(path + '.zip')
         print("Unpacked !")
+        ensure_executable(run_path)
+        return run_path
 
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)

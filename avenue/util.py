@@ -19,14 +19,14 @@ def ensure_executable(bin):
             print(f"No permission to make {filename} executable")
 
 
-def asset_id(name, system):
+def compute_assed_id(name, system):
     system = system.lower()
     assert system in ['windows', 'darwin', 'linux'], 'only windows, linux, mac are supported'
     path = '{}-{}'.format(name, system)
     return path
 
 
-def asset_path(asset_id):
+def compute_asset_path(asset_id):
     project_root = os.path.dirname(os.path.dirname(__file__))
     default_path = os.path.join(project_root, 'unity_assets')
     dir = os.environ.get('AVENUE_ASSETS', default_path)

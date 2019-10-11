@@ -14,13 +14,11 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 """
 
 
-class AvenueCar_v0(BaseAvenueCtrl):
+class AvenueCar(BaseAvenueCtrl):
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
-    asset_name = 'avenue_continuous'
+    asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
-
-
 
 
 class AvenueCarDev(BaseAvenueCtrl):
@@ -41,9 +39,9 @@ class AvenueDroneDev(BaseAvenueCtrl):
 """
 
 
-class LaneFollowing(AvenueCarDev):
+class LaneFollowing(AvenueCar):
     def __init__(self, config):
-        super().__init__(config=dict(config, task=0))
+        super().__init__(config=dict(config, task=0))  # TODO: This is weird. What is task 0?
 
     def compute_reward(self, s, r, d):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
@@ -87,8 +85,10 @@ def LaneFollowingTrack():
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
             skip_frame=4,
-            height=368,
-            width=368,
+            # height=368,
+            # width=368,
+            height=128,
+            width=64,
             night_mode=False,
             road_type=1,
             pedestrian_distracted_percent=random.random(),
