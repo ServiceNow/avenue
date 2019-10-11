@@ -31,6 +31,8 @@ class FakeActionSpace(gym.Wrapper):
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)
 
+
+
 class UnityEnv(gym.Wrapper):
     """
         Base class for avenue gym wrapper and automatic download.
