@@ -1,5 +1,4 @@
 import gym
-from gym import spaces
 from collections import deque
 import numpy as np
 import os
@@ -23,33 +22,45 @@ class RandomizeWrapper(gym.Wrapper):
 
 
 class ConcatComplex(gym.ObservationWrapper):
-
     def __init__(self, env, observation_dict):
-        """
-
-        :param env:
-        :param observation_dict: This is a dict of str to a list of strings
+        """observation_dict is a dict of lists of keys to be concatenated
         """
         super().__init__(env)
         self.observation_dict = observation_dict
-        self.observation_space = spaces.Dict({})
-        for k, v in observation_dict.items():
-            assert all(name in env.observation_space.spaces.keys() for name in v), \
-                f"All values in {v} must be in {env.observation_space.spaces.keys()}"
-            shapes, lows, highs, dtypes = zip(*[(box.shape, box.low, box.high, box.dtype) for name, box in env.observation_space.spaces.items() if name in v])
-            low = lows[0].flatten()[0]
-            high = highs[0].flatten()[0]
-            shapes_dim = [s[:-1] for s in shapes]
-            assert all(s == shapes_dim[0] for s in shapes_dim), "All dimensions must match!"
-            assert all(all(s.flatten() == low) for s in lows), "All low must match!"
-            assert all(all(s.flatten() == high) for s in highs), "All high must match!"
-            assert all(s == dtypes[0] for s in dtypes), f"All dtypes must match!{dtypes}"
-
-            new_shape = shapes_dim[0] + (sum(s[-1] for s in shapes),)
-            self.observation_space.spaces[k] = spaces.Box(low=low, high=high, dtype=dtypes[0],shape= new_shape)
+        spaces = {k: concat_spaces_from_dict(env.observation_space.spaces, v) for k, v in observation_dict.items()}
+        self.observation_space = gym.spaces.Dict(spaces)
 
     def observation(self, state):
         return {k: np.concatenate([x for name, x in state.items() if name in v], axis=-1) for k, v in self.observation_dict.items()}
+
+
+class DictToTupleWrapper(gym.ObservationWrapper):
+    def __init__(self, env, *args):
+        """Each argument contains a key or tuple of keys which will be concatenated"""
+        super().__init__(env)
+        self.keys = [k if isinstance(k, (list, tuple)) else (k,) for k in args]
+        assert isinstance(env.observation_space, gym.spaces.Dict)
+        spaces = [concat_spaces_from_dict(env.observation_space.spaces, k) for k in self.keys]
+        self.observation_space = gym.spaces.Tuple(spaces)
+
+    def observation(self, state):
+        return tuple(np.concatenate([x for name, x in state.items() if name in k], axis=-1) for k in self.keys)
+
+
+def concat_spaces_from_dict(spaces: dict, keys):
+    """Used in ConcatComplex and DictToTupleWrapper"""
+    assert all(name in spaces.keys() for name in keys), f"All values in {keys} must be in {spaces.keys()}"
+    shapes, lows, highs, dtypes = zip(*[(box.shape, box.low, box.high, box.dtype) for name, box in spaces.items() if name in keys])
+    low = lows[0].flatten()[0]
+    high = highs[0].flatten()[0]
+    shapes_dim = [s[:-1] for s in shapes]
+    assert all(s == shapes_dim[0] for s in shapes_dim), "All dimensions must match!"
+    assert all(all(s.flatten() == low) for s in lows), "All low must match!"
+    assert all(all(s.flatten() == high) for s in highs), "All high must match!"
+    assert all(s == dtypes[0] for s in dtypes), f"All dtypes must match!{dtypes}"
+
+    new_shape = shapes_dim[0] + (sum(s[-1] for s in shapes),)
+    return gym.spaces.Box(low=low, high=high, dtype=dtypes[0], shape=new_shape)
 
 
 class DifferentialActions(gym.ObservationWrapper):
@@ -91,6 +102,7 @@ class ReduceActionSpace(gym.Wrapper):
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)
 
+
 class VideoSaver(gym.Wrapper):
     def __init__(self, env):
         gym.Wrapper.__init__(self, env)
@@ -118,36 +130,7 @@ class WrapPyTorch(gym.ObservationWrapper):
         super(WrapPyTorch, self).__init__(env)
         obs_shape = self.observation_space.spaces["visual"].shape
         new_shape = (obs_shape[2], obs_shape[1], obs_shape[0])
-        self.observation_space = spaces.Box(low=0, high=1, shape=new_shape, dtype=np.float32)
+        self.observation_space = gym.spaces.Box(low=0, high=1, shape=new_shape, dtype=np.float32)
 
     def observation(self, observation):
         return observation.transpose(2, 0, 1)/255
-
-
-class MaxStep(gym.Wrapper):
-    def __init__(self, env, max_episode_steps=None):
-        super(MaxStep, self).__init__(env)
-        self._max_episode_steps = max_episode_steps
-        self._elapsed_steps = 0
-
-    def _past_limit(self):
-        """Return true if we are past our limit"""
-        if self._max_episode_steps is not None and self._max_episode_steps <= self._elapsed_steps:
-            return True
-
-        return False
-
-    def step(self, action):
-        observation, reward, done, info = self.env.step(action)
-        self._elapsed_steps += 1
-
-        if self._past_limit():
-            if self.metadata.get('semantics.autoreset'):
-                _ = self.reset() # automatically reset the env
-            done = True
-
-        return observation, reward, done, info
-
-    def reset(self, **kwargs):
-        self._elapsed_steps = 0
-        return self.env.reset(**kwargs)

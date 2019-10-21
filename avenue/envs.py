@@ -1,3 +1,5 @@
+from gym.wrappers import TimeLimit
+
 from .env import *
 from .wrappers import *
 
@@ -87,7 +89,7 @@ def LaneFollowingTrack():
             skip_frame=4,
             # height=368,
             # width=368,
-            height=128,
+            height=256,
             width=64,
             night_mode=False,
             road_type=1,
@@ -104,6 +106,7 @@ def LaneFollowingTrack():
 
     env = LaneFollowing(config=compute_config())
     env = RandomizeWrapper(env, compute_config)
-    env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
-    env = MaxStep(env, max_episode_steps=1000)
+    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
+    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
+    env = TimeLimit(env, max_episode_steps=1000)
     return env
