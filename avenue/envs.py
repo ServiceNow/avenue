@@ -105,7 +105,7 @@ def LaneFollowingTrack():
         )
 
     env = LaneFollowing(config=compute_config())
-    env = RandomizeWrapper(env, compute_config)
+    env = RandomizeWrapper(env, compute_config, n=1000)
     # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
     env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
     env = TimeLimit(env, max_episode_steps=1000)

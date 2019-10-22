@@ -5,20 +5,26 @@ import os
 
 
 class RandomizeWrapper(gym.Wrapper):
-    def __init__(self, env, compute_config, n=10):
+    def __init__(self, env, compute_config, n=1000):
         super().__init__(env)
         self.n = n
         self.compute_config = compute_config
         self.epsiodes = 0
+        self.steps_since_config = 0
 
     def reset(self, **kwargs):
         self.epsiodes += 1
-        if self.epsiodes % self.n == 0:
+        if self.steps_since_config > self.n:
             config = self.compute_config()
             self.env.close()
             self.env = self.env.__class__(config=config)
+            self.steps_since_config = 0
 
         return self.env.reset()
+
+    def step(self, action):
+        self.steps_since_config += 1
+        return super().step(action)
 
 
 class ConcatComplex(gym.ObservationWrapper):
