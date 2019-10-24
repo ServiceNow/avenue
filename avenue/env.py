@@ -104,9 +104,6 @@ class BaseAvenue(UnityEnv):
         self.observation_space = spaces.Dict(dict(
             {k : spaces.Box(low= -100, high=100,shape=(v,), dtype=np.float32) for k,v in state_dims._asdict().items()},
             rgb=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),
-            segmentation=spaces.Box(0, 255, (info["brain_info"].visual_observations[0].shape[1],
-                                             info["brain_info"].visual_observations[0].shape[2],
-                                             1))
         ))
 
     def step(self, a):
@@ -119,8 +116,7 @@ class BaseAvenue(UnityEnv):
         done = self.compute_terminal(self.state, r, d)
         info = dict(info, reset=False, avenue_state=self.state)  # reset=False, i.e. all dones are true terminals
         rgb = (255 * info["brain_info"].visual_observations[0].squeeze(0)).astype(np.uint8)
-        segmentation = (255 * info["brain_info"].visual_observations[1].squeeze(0)).astype(np.uint8)
-        m = dict(self.state._asdict(), rgb=rgb, segmentation=segmentation)
+        m = dict(self.state._asdict(), rgb=rgb)
         return m, reward, done, info
 
     def reset(self, **kwargs):

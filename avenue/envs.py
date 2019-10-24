@@ -79,7 +79,7 @@ class AutoSpeed(gym.Wrapper):
         return self.env.reset(**kwargs)
 
 
-def LaneFollowingTrack():
+def RaceSolo():
     def generate_env():
         return LaneFollowing(dict(
             lane_number=2,
@@ -90,16 +90,17 @@ def LaneFollowingTrack():
             width=256,
             height=64,
             night_mode=False,
-            road_type=1,
+            road_type=6,
             pedestrian_distracted_percent=random.random(),
             pedestrian_density=0,
-            weather_condition=0,
-            no_decor=1,
+            weather_condition=1,
+            no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
             car_number=0,
             layout=1,
             done_unity=1,
-            starting_speed=random.randint(0, 10)
+            starting_speed=random.randint(0, 10),
+            hd_rendering=0
         ))
 
     env = RandomizedEnv(generate_env, n=10000)
