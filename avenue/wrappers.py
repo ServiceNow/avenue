@@ -4,20 +4,19 @@ import numpy as np
 import os
 
 
-class RandomizeWrapper(gym.Wrapper):
-    def __init__(self, env, compute_config, n=1000):
-        super().__init__(env)
+class RandomizedEnv(gym.Wrapper):
+    def __init__(self, env_fn, n=10000):
         self.n = n
-        self.compute_config = compute_config
+        self.env_fn = env_fn
         self.epsiodes = 0
         self.steps_since_config = 0
+        super().__init__(env_fn())
 
     def reset(self, **kwargs):
         self.epsiodes += 1
         if self.steps_since_config > self.n:
-            config = self.compute_config()
             self.env.close()
-            self.env = self.env.__class__(config=config)
+            self.env = self.env_fn()
             self.steps_since_config = 0
 
         return self.env.reset()

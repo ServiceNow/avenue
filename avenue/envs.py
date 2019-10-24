@@ -80,8 +80,8 @@ class AutoSpeed(gym.Wrapper):
 
 
 def LaneFollowingTrack():
-    def compute_config():
-        return dict(
+    def generate_env():
+        return LaneFollowing(dict(
             lane_number=2,
             task=0,
             time=random.randint(8, 17),
@@ -102,10 +102,9 @@ def LaneFollowingTrack():
             layout=1,
             done_unity=1,
             starting_speed=random.randint(0, 10)
-        )
+        ))
 
-    env = LaneFollowing(config=compute_config())
-    env = RandomizeWrapper(env, compute_config, n=1000)
+    env = RandomizedEnv(generate_env, n=10000)
     # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
     env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
     env = TimeLimit(env, max_episode_steps=1000)
