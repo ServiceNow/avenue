@@ -17,7 +17,8 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 
 
 class AvenueCar(BaseAvenueCtrl):
-    host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
+    # host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
+    host_ids = {'linux': '1eRKQaRxp2dJL9krKviqyecNv5ikFnMrC'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
@@ -104,7 +105,8 @@ def RaceSolo():
         ))
 
     env = RandomizedEnv(generate_env, n=10000)
-    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
-    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
     env = TimeLimit(env, max_episode_steps=1000)
+    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
+    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
+    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude"])
     return env
