@@ -99,8 +99,7 @@ class BaseAvenue(UnityEnv):
         # Get the info to find the resolutions and number of camera
         _, _, _, info = self.env.step(self.env.action_space.sample())
 
-        # Since we change the resolution in the config we need to find the new visual observations spaces (rgb,
-        # segmentation).
+        # Since we change the resolution in the config we need to find the new visual observations space.
         self.observation_space = spaces.Dict(dict(
             {k : spaces.Box(low= -100, high=100,shape=(v,), dtype=np.float32) for k,v in state_dims._asdict().items()},
             rgb=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),
