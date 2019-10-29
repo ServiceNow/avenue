@@ -57,6 +57,10 @@ class namedtuple(tuple):
       return cls._nt(*args, **kwargs)
 
 
+def min_max_norm(x, min_value, max_value):
+  return ((x - min_value) / (max_value - min_value) - 0.5) * 2
+
+
 def test_namedtuple():
   class A(namedtuple):
     c: ...
@@ -72,5 +76,4 @@ if __name__ == "__main__":
   test_namedtuple()
 
 
-def min_max_norm(x, min_value, max_value):
-    return ((x - min_value)/(max_value - min_value) - 0.5) * 2
+

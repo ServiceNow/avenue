@@ -54,7 +54,8 @@ class LaneFollowing(AvenueCar):
         if d:
             r = -40
 
-        return min_max_norm(r, -40, 1)
+        # return min_max_norm(r, -40, 1)  # TODO: should we keep this?
+        return r
 
     def compute_terminal(self, s, r, d):
         return d
