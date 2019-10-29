@@ -32,19 +32,16 @@ class AvenueCarDev(BaseAvenueCtrl):
 
 
 class AvenueDroneDev(BaseAvenueCtrl):
+    # TODO: Should we keep this in for the release?
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "Drone"
     ctrl_type = ControllerType.DRONE
 
-"""
-    Example of created environment where you have to drive while avoiding pedestrians.
-"""
-
 
 class LaneFollowing(AvenueCar):
     def __init__(self, config):
-        super().__init__(config=dict(config, task=0))  # TODO: This is weird. What is task 0?
+        super().__init__(config=dict(config, task=0))  # TODO: What is task 0?
 
     def compute_reward(self, s, r, d):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
@@ -98,7 +95,7 @@ def RaceSolo():
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
             car_number=0,
-            layout=1,
+            layout=1,  # race track
             done_unity=1,
             starting_speed=random.randint(0, 10),
             hd_rendering=0
@@ -109,4 +106,36 @@ def RaceSolo():
     # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
     # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
     env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude"])
+    return env
+
+
+def CityPedestrians():
+    def generate_env():
+        return LaneFollowing(dict(
+            lane_number=2,
+            task=0,
+            time=random.randint(8, 17),
+            city_seed=random.randint(0, 10000),
+            skip_frame=4,
+            width=256,
+            height=64,
+            night_mode=False,
+            road_type=0,  # city
+            pedestrian_distracted_percent=random.random(),
+            pedestrian_density=10,
+            weather_condition=0,
+            no_decor=0,
+            top_speed=26,  # m/s approximately 50 km / h
+            car_number=70,
+            layout=1,  # TODO: Cyril didn't you tell me to set this to 2? If this is 2 there are crossroads everywhere
+            done_unity=1,
+            starting_speed=random.randint(0, 10),
+            hd_rendering=0
+        ))
+
+    env = RandomizedEnv(generate_env, n=10000)
+    env = TimeLimit(env, max_episode_steps=1000)
+    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
+    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
+    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "angular_velocity"])
     return env
