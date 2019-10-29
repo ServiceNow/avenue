@@ -2,6 +2,7 @@ from gym.wrappers import TimeLimit
 
 from .env import *
 from .wrappers import *
+from .util import min_max_norm
 
 """
 This file give the ability to create new environments. Given the inherited class, you will have different classes of
@@ -52,7 +53,8 @@ class LaneFollowing(AvenueCar):
             r = 0
         if d:
             r = -40
-        return r
+
+        return min_max_norm(r, -40, 1)
 
     def compute_terminal(self, s, r, d):
         return d
@@ -77,7 +79,8 @@ class AutoSpeed(gym.Wrapper):
         return self.env.reset(**kwargs)
 
 
-def RaceSolo():
+def RaceSolo(concat_complex=False):
+
     def generate_env():
         return LaneFollowing(dict(
             lane_number=2,
@@ -103,9 +106,11 @@ def RaceSolo():
 
     env = RandomizedEnv(generate_env, n=10000)
     env = TimeLimit(env, max_episode_steps=1000)
-    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
+    if concat_complex:
+        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude"]})
     # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
-    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude"])
+    else:
+        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude"])
     return env
 
 

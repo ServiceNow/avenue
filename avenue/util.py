@@ -70,3 +70,7 @@ def test_namedtuple():
 
 if __name__ == "__main__":
   test_namedtuple()
+
+
+def min_max_norm(x, min_value, max_value):
+    return ((x - min_value)/(max_value - min_value) - 0.5) * 2
