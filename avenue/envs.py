@@ -120,20 +120,20 @@ def CityPedestrians():
         return LaneFollowing(dict(
             lane_number=2,
             task=0,
-            time=random.randint(8, 17),
+            time=12,
             city_seed=random.randint(0, 10000),
             skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
             road_type=0,  # city
-            pedestrian_distracted_percent=random.random(),
-            pedestrian_density=10,
+            pedestrian_distracted_percent=0.2,
+            pedestrian_density=5,
             weather_condition=0,
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
-            car_number=70,
-            layout=1,  # TODO: Cyril didn't you tell me to set this to 2? If this is 2 there are crossroads everywhere
+            car_number=20,
+            layout=0,  # TODO: Cyril didn't you tell me to set this to 2? If this is 2 there are crossroads everywhere
             done_unity=1,
             starting_speed=random.randint(0, 10),
             hd_rendering=0
