@@ -41,6 +41,10 @@ class AvenueDroneDev(BaseAvenueCtrl):
 
 
 class LaneFollowing(AvenueCar):
+    reward_velocity = 0.2
+    reward_done = -1.
+    reward_close = 0.
+
     def __init__(self, config):
         super().__init__(config=dict(config, task=0))  # TODO: What is task 0?
 
@@ -48,13 +52,12 @@ class LaneFollowing(AvenueCar):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
         velocity_magnitude = s.velocity_magnitude[0]
         top_speed = s.top_speed[0]
-        r = (math.cos(theta) * velocity_magnitude) / top_speed
+        r = self.reward_velocity * (math.cos(theta) * velocity_magnitude) / top_speed
         if s.close_car[0] == 1 or s.close_pedestrian[0] == 1:
-            r = 0
+            r = self.reward_close
         if d:
-            r = -40
+            r = self.reward_done
 
-        # return min_max_norm(r, -40, 1)  # TODO: should we keep this?
         return r
 
     def compute_terminal(self, s, r, d):
