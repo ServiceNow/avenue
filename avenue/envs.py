@@ -121,7 +121,8 @@ def CityPedestrians():
             lane_number=2,
             task=0,
             time=12,
-            city_seed=random.randint(0, 10000),
+            # city_seed=random.randint(0, 10000),
+            city_seed=55,
             skip_frame=4,
             width=256,
             height=64,
@@ -133,9 +134,9 @@ def CityPedestrians():
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
             car_number=20,
-            layout=0,  # TODO: Cyril didn't you tell me to set this to 2? If this is 2 there are crossroads everywhere
+            layout=0,  # 0 = straight road, 1 = curvy road, 2 = crossroads
             done_unity=1,
-            starting_speed=random.randint(0, 10),
+            starting_speed=random.randint(0, 10),  # TODO: what does this do?
             hd_rendering=0
         ))
 
