@@ -73,6 +73,7 @@ class Car_v0(AvenueCar_v0):
     reward_pedestrian_hit = -5
     reward_car_hit = -5
     reward_obstacle_hit = -5
+    reward_close_pedestrian_car = 0
 
     _min_speed = 1
     _max_count_low_speed = 100
@@ -120,8 +121,8 @@ class Car_v0(AvenueCar_v0):
 
         r = (math.cos(theta) * velocity_magnitude) / top_speed
 
-        if s.close_car[0] == 1 or s.close_pedestrian[0] == 1:
-            r = max(self.reward_close * velocity_magnitude / top_speed, self.get_min_reward())
+        if s.close_car[0] == 1 or s.close_pedestrian[0] == 1 and velocity_magnitude > self._min_speed:
+            r = self.reward_close_pedestrian_car
 
         if s.ground_col[0] == 1:
             r = self.reward_ground_col
