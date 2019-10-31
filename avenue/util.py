@@ -2,7 +2,7 @@ import platform
 import os
 from functools import partial
 import collections
-
+import numpy as np
 
 def ensure_executable(bin):
     if platform.system().lower() not in ('linux', 'darwin'):
@@ -59,6 +59,10 @@ class namedtuple(tuple):
 
 def min_max_norm(x, min_value, max_value):
   return ((x - min_value) / (max_value - min_value) - 0.5) * 2
+
+
+def np_distance(v1, v2):
+    return np.sqrt(np.sum((v1 - v2) ** 2))
 
 
 def test_namedtuple():

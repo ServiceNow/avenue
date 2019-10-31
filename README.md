@@ -22,3 +22,16 @@ for i in range(0, 1000):
 [Dataset creation and loading](docs/DATASET.md) \
 [Documentation of available environments](docs/ENVIRONMENTS.md) \
 [How to create an environment](avenue/envs.py)
+
+## Citing
+If you use Avenue in your research, you can cite it as follows:
+```bibtex
+@misc{ibrahim2019avenue,
+    author = {Cyril Ibrahim, Simon Ramstedt, Christopher Pal},
+    title = {Avenue},
+    year = {2019},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/elementai/avenue}},
+}
+```

@@ -2,7 +2,7 @@ from gym.wrappers import TimeLimit
 
 from .env import *
 from .wrappers import *
-from .util import min_max_norm
+from .util import min_max_norm, np_distance
 
 """
 This file give the ability to create new environments. Given the inherited class, you will have different classes of
@@ -31,9 +31,8 @@ class AvenueCarDev(BaseAvenueCtrl):
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
 
-
 class AvenueCar_v0(BaseAvenueCtrl):
-    host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
+    host_ids = {'linux': '19dTKAJ8BEGbza85I1q33IGCLKktz2uos'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueCar"
     ctrl_type = ControllerType.CAR
@@ -77,14 +76,19 @@ class Car_v0(AvenueCar_v0):
 
     _min_speed = 1
     _max_count_low_speed = 100
-    _max_dist_next_wp = 60
+    _max_dist_next_wp = 20
+    _max_count_sidewalk = 20
 
     def __init__(self, config):
         super().__init__(config=dict(config, task=0))
         self._counter_low_speed = 0
+        self._counter_sidewalk = 0
+        self._touched_sidewalk = False
 
     def reset(self, **kwargs):
         self._counter_low_speed = 0
+        self._counter_sidewalk = 0
+        self._touched_sidewalk = False
         return super().reset(**kwargs)
 
     def step(self, action):
@@ -94,6 +98,11 @@ class Car_v0(AvenueCar_v0):
             self._counter_low_speed += 1
         else:
             self._counter_low_speed = 0
+
+        if ob["ground_col"] == 1:
+            self._counter_sidewalk += 1
+
+        self._touched_sidewalk = (ob["ground_col"] == 1) or self._touched_sidewalk
 
         reset = self.compute_reset(ob, reward, done)
 
@@ -108,7 +117,9 @@ class Car_v0(AvenueCar_v0):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
         velocity_magnitude = s.velocity_magnitude[0]
         top_speed = s.top_speed[0]
+
         r = (math.cos(theta) * velocity_magnitude) / top_speed
+
         if s.close_car[0] == 1 or s.close_pedestrian[0] == 1:
             r = max(self.reward_close * velocity_magnitude / top_speed, self.get_min_reward())
         elif s.velocity_magnitude[0] < 1.0:
@@ -145,11 +156,13 @@ class Car_v0(AvenueCar_v0):
         return False
 
     def compute_reset(self, s, r, d):
-
-        if s["target_waypoint_dist"][0] > self._max_dist_next_wp:
+        if np_distance(s["closest_waypoint"], s["position"]) > self._max_dist_next_wp:
             return True
 
         if self._counter_low_speed > self._max_count_low_speed:
+            return True
+
+        if self._touched_sidewalk and (self._counter_sidewalk > self._max_count_sidewalk or s["ground_col"][0] == 0):
             return True
 
         return False
