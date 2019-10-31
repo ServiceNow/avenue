@@ -122,8 +122,6 @@ class Car_v0(AvenueCar_v0):
 
         if s.close_car[0] == 1 or s.close_pedestrian[0] == 1:
             r = max(self.reward_close * velocity_magnitude / top_speed, self.get_min_reward())
-        elif s.velocity_magnitude[0] < 1.0:
-            r = self.reward_low_speed
 
         if s.ground_col[0] == 1:
             r = self.reward_ground_col
@@ -244,6 +242,40 @@ def RaceSolo_v0(concat_complex=False):
             done_unity=1,
             starting_speed=random.randint(0, 10),
             hd_rendering=0
+        ))
+
+    env = RandomizedEnv(generate_env, n=10000)
+    env = TimeLimit(env, max_episode_steps=1000)
+    if concat_complex:
+        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
+    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
+    else:
+        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude"])
+    return env
+
+def RaceObstacles_v0(concat_complex=False):
+    def generate_env():
+        return Car_v0(dict(
+            lane_number=2,
+            task=0,
+            time=random.randint(8, 17),
+            city_seed=random.randint(0, 10000),
+            skip_frame=4,
+            width=256,
+            height=64,
+            night_mode=False,
+            road_type=6,
+            pedestrian_distracted_percent=random.random(),
+            pedestrian_density=0,
+            weather_condition=1,
+            no_decor=0,
+            top_speed=26,  # m/s approximately 50 km / h
+            car_number=0,
+            layout=1,  # race track
+            done_unity=1,
+            starting_speed=random.randint(0, 10),
+            hd_rendering=0,
+            nb_obstacles=200
         ))
 
     env = RandomizedEnv(generate_env, n=10000)

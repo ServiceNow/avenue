@@ -2,7 +2,7 @@ import avenue
 import time
 
 
-env = avenue.make("RaceSolo2")
+env = avenue.make("RaceObstacles_v0")
 env.reset(train_mode=True)
 
 start_time = time.time()
