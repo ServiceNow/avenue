@@ -94,8 +94,6 @@ class BaseAvenue(UnityEnv):
         self.state_idx = [sum(state_dims[:i + 1]) for i in range(len(state_dims) - 1)]
         self.env.reset()
 
-        #import pdb; pdb.set_trace()
-
         # Get the info to find the resolutions and number of camera
         _, _, _, info = self.env.step(self.env.action_space.sample())
 

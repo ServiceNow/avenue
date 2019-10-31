@@ -24,6 +24,32 @@ class AvenueState(namedtuple):
     close_pedestrian = 1
     close_car = 1
 
+class AvenueCar(namedtuple):
+
+    waypoint_0 = 2
+    waypoint_1 = 2
+    waypoint_2 = 2
+    waypoint_3 = 2
+    waypoint_4 = 2
+    velocity_magnitude = 1
+    angle_to_next_waypoint_in_degrees = 1
+    steering_angle = 1
+    vertical_force = 1
+    velocity = 3
+    angular_velocity = 3
+    top_speed = 1
+    ground_col = 1
+    collide_car = 1
+    collide_other = 1
+    collide_pedestrian = 1
+    position = 3
+    forward = 3
+    closest_waypoint = 3
+    diff_next_angle = 1
+    close_pedestrian = 1
+    close_car = 1
+    target_waypoint_dist = 1
+
 class FollowCar(namedtuple):
     waypoint_0 = 2
     waypoint_1 = 2
