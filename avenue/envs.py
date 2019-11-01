@@ -121,7 +121,7 @@ class Car_v0(AvenueCar_v0):
 
         r = (math.cos(theta) * velocity_magnitude) / top_speed
 
-        if s.close_car[0] == 1 or s.close_pedestrian[0] == 1 and velocity_magnitude > self._min_speed:
+        if (s.close_car[0] == 1 or s.close_pedestrian[0] == 1) and velocity_magnitude > self._min_speed:
             r = self.reward_close_pedestrian_car
 
         if s.ground_col[0] == 1:
@@ -285,10 +285,8 @@ def RaceObstacles_v0(concat_complex=False):
     env = TimeLimit(env, max_episode_steps=1000)
     if concat_complex:
         env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
-    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
     else:
         env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
-
     return env
 
 
@@ -327,6 +325,7 @@ def CityPedestrians_v0(concat_complex=False):
         env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
 
     return env
+
 
 def CityPedestrians():
     def generate_env():
