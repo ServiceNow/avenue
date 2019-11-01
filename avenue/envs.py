@@ -70,9 +70,9 @@ class Car_v0(AvenueCar_v0):
     reward_close = -1.
     reward_ground_col = -4
     reward_low_speed = -3
-    reward_pedestrian_hit = -5
-    reward_car_hit = -5
-    reward_obstacle_hit = -5
+    reward_pedestrian_hit = -40
+    reward_car_hit = -40
+    reward_obstacle_hit = -40
     reward_close_pedestrian_car = 0
 
     _min_speed = 1
@@ -136,7 +136,7 @@ class Car_v0(AvenueCar_v0):
         if s.collide_pedestrian[0] == 1:
             r = self.reward_pedestrian_hit
 
-        return min_max_norm(r, self.get_min_reward(), 1)
+        return r
 
     def get_min_reward(self):
         return min(self.reward_close, self.reward_ground_col, self.reward_low_speed, self.reward_obstacle_hit,
