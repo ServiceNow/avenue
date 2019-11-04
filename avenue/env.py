@@ -17,23 +17,6 @@ class ControllerType(Enum):
     CAR = 1
     DRONE = 2
 
-
-class FakeActionSpace(gym.Wrapper):
-    def __init__(self, env, action_dim):
-        super(FakeActionSpace, self).__init__(env)
-        self.action_dim = action_dim
-        self.old_action_space = env.action_space
-        self.action_space = gym.spaces.Box(-1, 1, (action_dim,))
-
-    def step(self, action):
-        action_new_shape = np.zeros(self.old_action_space.shape[0])
-        action_new_shape[0:self.action_dim] = action[0:self.action_dim]
-        return self.env.step(action_new_shape)
-
-    def reset(self, **kwargs):
-        return self.env.reset(**kwargs)
-
-
 class UnityEnv(gym.Wrapper):
     """
         Base class for avenue gym wrapper and automatic download.
@@ -130,11 +113,3 @@ class BaseAvenue(UnityEnv):
 
     def compute_reward(self, s, r, d):
         return r
-
-
-class BaseAvenueCtrl(BaseAvenue):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        if self.ctrl_type is ControllerType.CAR:
-            self.env = FakeActionSpace(self.env, 2)

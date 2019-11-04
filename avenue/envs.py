@@ -19,27 +19,26 @@ vector_state_class: refer to the type of vector that we want. (see in avenue_sta
 """
 
 
-class AvenueCar(BaseAvenueCtrl):
+class AvenueCar(BaseAvenue):
     # host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     host_ids = {'linux': '1eRKQaRxp2dJL9krKviqyecNv5ikFnMrC'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
 
-
-class AvenueCarDev(BaseAvenueCtrl):
+class AvenueCarDev(BaseAvenue):
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueState"
     ctrl_type = ControllerType.CAR
 
-class AvenueCar_v0(BaseAvenueCtrl):
-    host_ids = {'linux': '19dTKAJ8BEGbza85I1q33IGCLKktz2uos'}
+class AvenueCar_v0(BaseAvenue):
+    host_ids = {'linux': '1yjaIkK203Qyf9b8dS98iJ-xv7Q48iIGe'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueCar"
     ctrl_type = ControllerType.CAR
 
-class AvenueDroneDev(BaseAvenueCtrl):
+class AvenueDroneDev(BaseAvenue):
     # TODO: Should we keep this in for the release?
     host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
     asset_name = 'avenue_follow_car'
