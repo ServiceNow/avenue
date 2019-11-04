@@ -68,12 +68,12 @@ class LaneFollowing(AvenueCar):
 
 class Car_v0(AvenueCar_v0):
 
-    reward_close = -1.
-    reward_ground_col = -4
-    reward_low_speed = -3
-    reward_pedestrian_hit = -40
-    reward_car_hit = -40
-    reward_obstacle_hit = -40
+    reward_close = -0.01
+    reward_ground_col = -0.01
+    reward_low_speed = -0.01
+    reward_pedestrian_hit = -1
+    reward_car_hit = -1
+    reward_obstacle_hit = -1
     reward_close_pedestrian_car = 0
 
     _min_speed = 0.01
@@ -105,12 +105,9 @@ class Car_v0(AvenueCar_v0):
         if ob["ground_col"]:
             self._counter_sidewalk += 1
 
-        reset = self.compute_reset(ob, reward, done)
+        info["reset"] = self.compute_reset(ob, reward, done)
 
-        if reset:
-            info["reset"] = True
-
-        done = done or reset
+        done = done or info["reset"]
 
         return ob, reward, done, info
 
