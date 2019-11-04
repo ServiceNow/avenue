@@ -76,7 +76,7 @@ class Car_v0(AvenueCar_v0):
     reward_obstacle_hit = -40
     reward_close_pedestrian_car = 0
 
-    _min_speed = 1
+    _min_speed = 0.01
     _max_count_low_speed = 100
     _max_dist_next_wp = 20
     _max_count_sidewalk = 20
@@ -85,12 +85,10 @@ class Car_v0(AvenueCar_v0):
         super().__init__(config=dict(config, task=0))
         self._counter_low_speed = 0
         self._counter_sidewalk = 0
-        self._touched_sidewalk = False
 
     def reset(self, **kwargs):
         self._counter_low_speed = 0
         self._counter_sidewalk = 0
-        self._touched_sidewalk = False
         return super().reset(**kwargs)
 
     def step(self, action):
