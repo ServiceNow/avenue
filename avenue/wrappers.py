@@ -2,6 +2,7 @@ import gym
 from collections import deque
 import numpy as np
 import os
+import imageio
 
 
 class RandomizedEnv(gym.Wrapper):
@@ -109,6 +110,7 @@ class ReduceActionSpace(gym.Wrapper):
 
 
 class VideoSaver(gym.Wrapper):
+
     def __init__(self, env):
         gym.Wrapper.__init__(self, env)
         self._env = self.env
@@ -120,7 +122,6 @@ class VideoSaver(gym.Wrapper):
         return ob
 
     def save_video(self, path="/tmp/gif_avenue.gif"):
-        import imageio
         imageio.mimsave(path, self.video_buffer)
         os.chmod(path, 0o777)  # TODO: is that really necessary?
 

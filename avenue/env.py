@@ -43,7 +43,8 @@ class UnityEnv(gym.Wrapper):
     asset_name: str
     ctrl_type: ControllerType
 
-    def __init__(self, config=None, seed=0):
+    def __init__(self, config=None):
+        self.config = config
         path = self.get_assets()
         env = GymUnityEnv(environment_filename=path, use_visual=self.visual, worker_id=random.randint(1000, 20000))
         env.reset(config)
@@ -94,10 +95,13 @@ class BaseAvenue(UnityEnv):
         self.state_idx = [sum(state_dims[:i + 1]) for i in range(len(state_dims) - 1)]
         self.env.reset()
 
+        #import pdb; pdb.set_trace()
+
         # Get the info to find the resolutions and number of camera
         _, _, _, info = self.env.step(self.env.action_space.sample())
 
-        # Since we change the resolution in the config we need to find the new visual observations space.
+        # Since we change the resolution in the config we need to find the new visual observations spaces (rgb,
+        # segmentation).
         self.observation_space = spaces.Dict(dict(
             {k : spaces.Box(low= -100, high=100,shape=(v,), dtype=np.float32) for k,v in state_dims._asdict().items()},
             rgb=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),

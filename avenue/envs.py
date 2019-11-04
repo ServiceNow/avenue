@@ -1,3 +1,5 @@
+from functools import partial
+
 from gym.wrappers import TimeLimit
 
 from .env import *
@@ -94,16 +96,19 @@ class Car_v0(AvenueCar_v0):
 
     def step(self, action):
         ob, reward, done, info = super().step(action)
-        if not(ob["close_car"][0] == 1 or ob["close_pedestrian"][0] == 1) and ob["velocity_magnitude"][0] < \
+
+        ob["velocity_magnitude"] = ob["velocity_magnitude"] / 50
+
+        if not(ob["close_car"][0] or ob["close_pedestrian"][0]) and ob["velocity_magnitude"][0] < \
                 self._min_speed:
             self._counter_low_speed += 1
         else:
             self._counter_low_speed = 0
 
-        if ob["ground_col"] == 1:
+        if ob["ground_col"]:
             self._counter_sidewalk += 1
 
-        self._touched_sidewalk = (ob["ground_col"] == 1) or self._touched_sidewalk
+        self._touched_sidewalk = (ob["ground_col"]) or self._touched_sidewalk
 
         reset = self.compute_reset(ob, reward, done)
 
@@ -121,19 +126,19 @@ class Car_v0(AvenueCar_v0):
 
         r = (math.cos(theta) * velocity_magnitude) / top_speed
 
-        if (s.close_car[0] == 1 or s.close_pedestrian[0] == 1) and velocity_magnitude > self._min_speed:
+        if (s.close_car[0] or s.close_pedestrian[0]) and velocity_magnitude > self._min_speed:
             r = self.reward_close_pedestrian_car
 
-        if s.ground_col[0] == 1:
+        if s.ground_col[0]:
             r = self.reward_ground_col
 
-        if s.collide_other[0] == 1:
+        if s.collide_other[0]:
             r = self.reward_obstacle_hit
 
-        if s.collide_car[0] == 1:
+        if s.collide_car[0]:
             r = self.reward_car_hit
 
-        if s.collide_pedestrian[0] == 1:
+        if s.collide_pedestrian[0]:
             r = self.reward_pedestrian_hit
 
         return r
@@ -143,13 +148,13 @@ class Car_v0(AvenueCar_v0):
                    self.reward_pedestrian_hit, self.reward_car_hit)
 
     def compute_terminal(self, s, r, d):
-        if s.collide_other[0] == 1:
+        if s.collide_other[0]:
             return True
 
-        if s.collide_car[0] == 1:
+        if s.collide_car[0]:
             return True
 
-        if s.collide_pedestrian[0] == 1:
+        if s.collide_pedestrian[0]:
             return True
 
         return False
@@ -176,7 +181,6 @@ class AutoSpeed(gym.Wrapper):
 
     def step(self, action):
         calculated_speed = math.fabs((self.speed_target - self.last_speed) * 0.05)
-        brake = 0
         action = np.array([calculated_speed, action[0]])
         observation, reward, done, info = self.env.step(action)
         self.last_speed = observation["vector"][3]
@@ -194,7 +198,6 @@ def RaceSolo(concat_complex=False):
             task=0,
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
-            skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
@@ -221,14 +224,37 @@ def RaceSolo(concat_complex=False):
     return env
 
 
-def RaceSolo_v0(concat_complex=False):
-    def generate_env():
+def make_env(generate_env, concat_complex=False, record_video=False):
+
+    if record_video:
+        generate_env = partial(generate_env, skip_frame=0, hd_rendering=1, hd_rendering_width=1920,
+                               hd_rendering_height=1024)
+
+    else:
+        generate_env = partial(generate_env, skip_frame=4, hd_rendering=0)
+
+    env = RandomizedEnv(generate_env, n=10000)
+    env = TimeLimit(env, max_episode_steps=1000)
+
+    if record_video:
+        env = VideoSaver(env)
+
+    if concat_complex:
+        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
+    else:
+        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
+    return env
+
+
+def RaceSolo_v0(**kwargs):
+
+    def generate_env(**kwargs):
         return Car_v0(dict(
+            kwargs,
             lane_number=2,
             task=0,
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
-            skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
@@ -245,25 +271,18 @@ def RaceSolo_v0(concat_complex=False):
             hd_rendering=0
         ))
 
-    env = RandomizedEnv(generate_env, n=10000)
-    env = TimeLimit(env, max_episode_steps=1000)
-    if concat_complex:
-        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
-    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
-    else:
-        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
-    return env
+    return make_env(generate_env, **kwargs)
 
 
-def RaceObstacles_v0(concat_complex=False):
+def RaceObstacles_v0(**kwargs):
 
-    def generate_env():
+    def generate_env(**kwargs):
         return Car_v0(dict(
+            kwargs,
             lane_number=2,
             task=0,
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
-            skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
@@ -277,28 +296,21 @@ def RaceObstacles_v0(concat_complex=False):
             layout=1,  # race track
             done_unity=1,
             starting_speed=random.randint(0, 10),
-            hd_rendering=0,
             nb_obstacles=200
         ))
 
-    env = RandomizedEnv(generate_env, n=10000)
-    env = TimeLimit(env, max_episode_steps=1000)
-    if concat_complex:
-        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
-    else:
-        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
-    return env
+    return make_env(generate_env, **kwargs)
 
 
-def CityPedestrians_v0(concat_complex=False):
+def CityPedestrians_v0(**kwargs):
 
-    def generate_env():
+    def generate_env(**kwargs):
         return Car_v0(dict(
+            kwargs,
             lane_number=2,
             task=0,
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
-            skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
@@ -309,33 +321,24 @@ def CityPedestrians_v0(concat_complex=False):
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
             car_number=0,
-            layout=0,  # race track
+            layout=0,
             done_unity=1,
             starting_speed=random.randint(0, 10),
-            hd_rendering=0,
             nb_obstacles=0
         ))
 
-    env = RandomizedEnv(generate_env, n=10000)
-    env = TimeLimit(env, max_episode_steps=1000)
-    if concat_complex:
-        env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "steering_angle"]})
-    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
-    else:
-        env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
-
-    return env
+    return make_env(generate_env, **kwargs)
 
 
-def CityPedestrians():
-    def generate_env():
+def CityPedestrians(**kwargs):
+
+    def generate_env(**kwargs):
         return LaneFollowing(dict(
-            lane_number=2,
+            kwargs,
             task=0,
             time=12,
             # city_seed=random.randint(0, 10000),
             city_seed=55,
-            skip_frame=4,
             width=256,
             height=64,
             night_mode=False,
@@ -348,13 +351,7 @@ def CityPedestrians():
             car_number=20,
             layout=0,  # 0 = straight road, 1 = curvy road, 2 = crossroads
             done_unity=1,
-            starting_speed=random.randint(0, 10),  # TODO: what does this do?
-            hd_rendering=0
+            starting_speed=random.randint(0, 10)  # TODO: what does this do?
         ))
 
-    env = RandomizedEnv(generate_env, n=10000)
-    env = TimeLimit(env, max_episode_steps=1000)
-    # env = ConcatComplex(env, {"rgb": ["rgb"], "vector": ["velocity_magnitude", "velocity", "angular_velocity"]})
-    # env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "velocity", "angular_velocity"])
-    env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "angular_velocity"])
-    return env
+    return make_env(generate_env, **kwargs)
