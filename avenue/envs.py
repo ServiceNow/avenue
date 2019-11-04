@@ -107,8 +107,6 @@ class Car_v0(AvenueCar_v0):
         if ob["ground_col"]:
             self._counter_sidewalk += 1
 
-        self._touched_sidewalk = (ob["ground_col"]) or self._touched_sidewalk
-
         reset = self.compute_reset(ob, reward, done)
 
         if reset:
@@ -165,7 +163,7 @@ class Car_v0(AvenueCar_v0):
         if self._counter_low_speed > self._max_count_low_speed:
             return True
 
-        if self._touched_sidewalk and (self._counter_sidewalk > self._max_count_sidewalk or s["ground_col"][0] == 0):
+        if self._counter_sidewalk and (self._counter_sidewalk > self._max_count_sidewalk or s["ground_col"][0] == 0):
             return True
 
         return False
