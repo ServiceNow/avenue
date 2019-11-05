@@ -33,7 +33,7 @@ class AvenueCarDev(BaseAvenue):
     ctrl_type = ControllerType.CAR
 
 class AvenueCar_v0(BaseAvenue):
-    host_ids = {'linux': '1yjaIkK203Qyf9b8dS98iJ-xv7Q48iIGe'}
+    host_ids = {'linux': '1yXnjgu1AXg9jUij5VfQ9JQ8ZExpafb86'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueCar"
     ctrl_type = ControllerType.CAR
@@ -68,6 +68,10 @@ class Car_v0(AvenueCar_v0):
     def step(self, action):
         ob, reward, done, info = super().step(action)
         ob["velocity_magnitude"] = ob["velocity_magnitude"] / self._top_speed
+
+        info["reset"] = self.compute_reset(ob, reward, done)
+        done = done or info["reset"]
+
         return ob, reward, done, info
 
     def compute_reward(self, s, r, d):
@@ -107,6 +111,9 @@ class Car_v0(AvenueCar_v0):
             s.collide_pedestrian[0],
             s.ground_col[0],
         ))
+
+    def compute_reset(self, s, r, d):
+        return s["current_waypoint"][0] > (s["num_waypoints"][0] - 5)
 
 
 def make_env(generate_env, concat_complex=False, record_video=False):
@@ -201,8 +208,8 @@ def CityPedestrians_v0(**kwargs):
             height=64,
             night_mode=False,
             road_type=0,
-            pedestrian_distracted_percent=0.2,
-            pedestrian_density=5,
+            pedestrian_distracted_percent=1,
+            pedestrian_density=30,
             weather_condition=5,
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h
@@ -230,8 +237,8 @@ def CityCars_v0(**kwargs):
             height=64,
             night_mode=False,
             road_type=0,  # city
-            pedestrian_distracted_percent=0.2,
-            pedestrian_density=5,
+            pedestrian_distracted_percent=1,
+            pedestrian_density=30,
             weather_condition=5,
             no_decor=0,
             top_speed=26,  # m/s approximately 50 km / h

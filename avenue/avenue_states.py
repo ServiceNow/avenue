@@ -49,6 +49,8 @@ class AvenueCar(namedtuple):
     close_pedestrian = 1
     close_car = 1
     target_waypoint_dist = 1
+    current_waypoint = 1
+    num_waypoints = 1
 
 class FollowCar(namedtuple):
     waypoint_0 = 2
@@ -58,13 +60,14 @@ class FollowCar(namedtuple):
     waypoint_4 = 2
     velocity_magnitude = 1
     angle_to_next_waypoint_in_degrees = 1
-    horizontal_force = 1
+    steering_angle = 1
     vertical_force = 1
     velocity = 3
     angular_velocity = 3
     top_speed = 1
     ground_col = 1
     collide_car = 1
+    collide_other = 1
     collide_pedestrian = 1
     position = 3
     forward = 3
@@ -72,6 +75,9 @@ class FollowCar(namedtuple):
     diff_next_angle = 1
     close_pedestrian = 1
     close_car = 1
+    target_waypoint_dist = 1
+    current_waypoint = 1
+    path_length = 1
     follow_car_pos = 3
     end_point = 3
     car_to_follow_forward = 1
