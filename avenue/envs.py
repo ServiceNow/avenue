@@ -69,12 +69,12 @@ class LaneFollowing(AvenueCar):
 class Car_v0(AvenueCar_v0):
 
     # reward_close = -2
-    reward_ground_col = -2
     # reward_low_speed = -0.01
-    reward_pedestrian_hit = -5
-    reward_car_hit = -5
-    reward_obstacle_hit = -5
-    reward_close_pedestrian_car = -2
+    reward_close_pedestrian_car = -1
+    reward_ground_col = -5
+    reward_pedestrian_hit = -10
+    reward_car_hit = -10
+    reward_obstacle_hit = -10
 
     _min_speed = 0.01
     _max_count_low_speed = 100
@@ -94,7 +94,7 @@ class Car_v0(AvenueCar_v0):
     def step(self, action):
         ob, reward, done, info = super().step(action)
 
-        ob["velocity_magnitude"] = ob["velocity_magnitude"] / 50  # TODO: call the result normalized_velocity_magnitude
+        ob["velocity_magnitude"] = ob["velocity_magnitude"] / 25  # TODO: call the result normalized_velocity_magnitude
 
         if not(ob["close_car"][0] or ob["close_pedestrian"][0]) and ob["velocity_magnitude"][0] < \
                 self._min_speed:
@@ -113,56 +113,49 @@ class Car_v0(AvenueCar_v0):
 
     def compute_reward(self, s, r, d):
         theta = math.radians(s.angle_to_next_waypoint_in_degrees[0])
-        velocity_magnitude = s.velocity_magnitude[0] / 50.  # 50 is the top speed
+        velocity_magnitude = s.velocity_magnitude[0] / 50.  # 50 m/s = 180km/h is the max speed
 
-        normalized_forward_velocity = math.cos(theta) * velocity_magnitude
-        # r = np.abs(normalized_forward_velocity - 0.5) * 2 + 1  # target speed 25, r in [0, 1]
-        r = normalized_forward_velocity  # in [0, 1]
+        normalized_forward_velocity = math.cos(theta) * velocity_magnitude  # in [0, 1]
 
-        if s.close_car[0] or s.close_pedestrian[0]:
-            r += self.reward_close_pedestrian_car * velocity_magnitude
-
-        if s.ground_col[0]:
-            r += self.reward_ground_col * velocity_magnitude
-
-        if s.collide_other[0]:
-            r += self.reward_obstacle_hit * velocity_magnitude
-
-        if s.collide_car[0]:
-            r += self.reward_car_hit * velocity_magnitude
+        # velocity squared is proportional to kinetic energy
+        # we want to minimize the car's energy if it goes off the road or hits something
 
         if s.collide_pedestrian[0]:
-            r += self.reward_pedestrian_hit * velocity_magnitude
+            r = self.reward_pedestrian_hit * velocity_magnitude**2
+        elif s.collide_car[0]:
+            r = self.reward_car_hit * velocity_magnitude**2
+        elif s.collide_other[0]:
+            r = self.reward_obstacle_hit * velocity_magnitude**2
+        elif s.ground_col[0]:
+            r = self.reward_ground_col * velocity_magnitude**2
+        elif s.close_car[0] or s.close_pedestrian[0]:
+            # when close then target speed = 2 m/s
+            r = self.reward_close_pedestrian_car * (velocity_magnitude - 0.04)**2  # in [-1, 0]
+        else:
+            # general target speed = 25 m/s = 90km/h
+            r = 1 - (normalized_forward_velocity * 2 - 1)**2  # in [0, 1]
+            # r = normalized_forward_velocity  # in [0, 1]
 
-        return r  # approx. in [-7, 1]
+        return r  # approx. in [-10, 1]
 
     # def get_min_reward(self):
     #     return min(self.reward_close, self.reward_ground_col, self.reward_low_speed, self.reward_obstacle_hit,
     #                self.reward_pedestrian_hit, self.reward_car_hit)
 
     def compute_terminal(self, s, r, d):
-        if s.collide_other[0]:
-            return True
-
-        if s.collide_car[0]:
-            return True
-
-        if s.collide_pedestrian[0]:
-            return True
-
-        return False
+        return any((
+            s.collide_other[0],
+            s.collide_car[0],
+            s.collide_pedestrian[0],
+            s.ground_col[0],
+        ))
 
     def compute_reset(self, s, r, d):
-        if np_distance(s["closest_waypoint"], s["position"]) > self._max_dist_next_wp:
-            return True
-
-        if self._counter_low_speed > self._max_count_low_speed:
-            return True
-
-        if self._counter_sidewalk and (self._counter_sidewalk > self._max_count_sidewalk or s["ground_col"][0] == 0):
-            return True
-
-        return False
+        return any((
+            # np_distance(s["closest_waypoint"], s["position"]) > self._max_dist_next_wp,
+            # self._counter_low_speed > self._max_count_low_speed,
+            # self._counter_sidewalk and (self._counter_sidewalk > self._max_count_sidewalk or s["ground_col"][0] == 0),
+        ))
 
 
 class AutoSpeed(gym.Wrapper):
@@ -199,7 +192,7 @@ def RaceSolo(concat_complex=False):
             pedestrian_density=0,
             weather_condition=1,
             no_decor=0,
-            top_speed=26,  # m/s approximately 50 km / h
+            top_speed=26,  # m/s seems to be only half of the actual top speed
             car_number=0,
             layout=1,  # race track
             done_unity=1,
