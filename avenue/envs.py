@@ -94,7 +94,7 @@ class Car_v0(AvenueCar_v0):
     def step(self, action):
         ob, reward, done, info = super().step(action)
 
-        ob["velocity_magnitude"] = ob["velocity_magnitude"] / 25  # TODO: call the result normalized_velocity_magnitude
+        ob["velocity_magnitude"] = ob["velocity_magnitude"] / 50  # TODO: call the result normalized_velocity_magnitude
 
         if not(ob["close_car"][0] or ob["close_pedestrian"][0]) and ob["velocity_magnitude"][0] < \
                 self._min_speed:
@@ -132,9 +132,11 @@ class Car_v0(AvenueCar_v0):
             # when close then target speed = 2 m/s
             r = self.reward_close_pedestrian_car * (velocity_magnitude - 0.04)**2  # in [-1, 0]
         else:
-            # general target speed = 25 m/s = 90km/h
-            r = 1 - (normalized_forward_velocity * 2 - 1)**2  # in [0, 1]
-            # r = normalized_forward_velocity  # in [0, 1]
+            # general target speed = 12.5 m/s = 45km/h
+            # v = 0     ->  0
+            # v = tgt   ->  1
+            # v = max   -> -8
+            r = 1 - (normalized_forward_velocity * 4 - 1)**2
 
         return r  # approx. in [-10, 1]
 
