@@ -86,7 +86,7 @@ class BaseAvenue(UnityEnv):
         # Since we change the resolution in the config we need to find the new visual observations spaces (rgb,
         # segmentation).
         self.observation_space = spaces.Dict(dict(
-            {k : spaces.Box(low= -100, high=100,shape=(v,), dtype=np.float32) for k,v in state_dims._asdict().items()},
+            {k : spaces.Box(low=-100, high=100, shape=(v,), dtype=np.float32) for k, v in state_dims._asdict().items()},
             rgb=spaces.Box(0, 255, info["brain_info"].visual_observations[0].shape[1:], np.uint8),
         ))
 
