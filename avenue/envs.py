@@ -48,8 +48,6 @@ class AvenueDroneDev(BaseAvenue):
 
 class Car_v0(AvenueCar_v0):
 
-    # reward_close = -2
-    # reward_low_speed = -0.01
     reward_close_pedestrian_car = -1
     reward_ground_col = -5
     reward_pedestrian_hit = -10
@@ -102,9 +100,6 @@ class Car_v0(AvenueCar_v0):
 
         return r  # approx. in [-10, 1]
 
-    # def get_min_reward(self):
-    #     return min(self.reward_close, self.reward_ground_col, self.reward_low_speed, self.reward_obstacle_hit,
-    #                self.reward_pedestrian_hit, self.reward_car_hit)
     def compute_terminal(self, s, r, d):
         return any((
             s.collide_other[0],
