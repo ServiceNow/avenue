@@ -53,9 +53,9 @@ class Car_v0(AvenueCar_v0):
     reward_pedestrian_hit = -10
     reward_car_hit = -10
     reward_obstacle_hit = -10
-    target_velocity = 20
+    target_velocity = 12.5
 
-    _top_speed = 12.5
+    _top_speed = 50
 
     def __init__(self, config):
         super().__init__(config=dict(config, task=0))
