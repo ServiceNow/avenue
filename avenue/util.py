@@ -4,6 +4,7 @@ from functools import partial
 import collections
 import numpy as np
 
+
 def ensure_executable(bin):
     if platform.system().lower() not in ('linux', 'darwin'):
         return

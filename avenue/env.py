@@ -8,14 +8,14 @@ import gym
 from gym import spaces
 import numpy as np
 from .util import ensure_executable, compute_assed_id, compute_asset_path
-from avenue.avenue_states import *
+from avenue.rpc import *
 import math
 from enum import Enum
 
 
 class ControllerType(Enum):
     CAR = 1
-    DRONE = 2
+
 
 class UnityEnv(gym.Wrapper):
     """

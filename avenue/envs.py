@@ -14,40 +14,16 @@ host_ids: give the google drive links id given the os.
 
 asset_name: refer to the right binary folder in unity_assets.
  
-vector_state_class: refer to the type of vector that we want. (see in avenue_states.py)
+vector_state_class: refer to the type of vector that we want. (see in rpc.py)
 
 """
 
 
-class AvenueCar(BaseAvenue):
-    # host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
-    host_ids = {'linux': '1eRKQaRxp2dJL9krKviqyecNv5ikFnMrC'}
-    asset_name = 'avenue_follow_car'
-    vector_state_class = "AvenueState"
-    ctrl_type = ControllerType.CAR
-
-class AvenueCarDev(BaseAvenue):
-    host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
-    asset_name = 'avenue_follow_car'
-    vector_state_class = "AvenueState"
-    ctrl_type = ControllerType.CAR
-
-class AvenueCar_v0(BaseAvenue):
+class Car_v0(BaseAvenue):
     host_ids = {'linux': '1yXnjgu1AXg9jUij5VfQ9JQ8ZExpafb86'}
     asset_name = 'avenue_follow_car'
     vector_state_class = "AvenueCar"
     ctrl_type = ControllerType.CAR
-
-class AvenueDroneDev(BaseAvenue):
-    # TODO: Should we keep this in for the release?
-    host_ids = {'linux': '1K122iLjvwL62ApWVaa92HfSWFcS-Lns_'}
-    asset_name = 'avenue_follow_car'
-    vector_state_class = "Drone"
-    ctrl_type = ControllerType.DRONE
-
-
-class Car_v0(AvenueCar_v0):
-
     reward_close_pedestrian_car = -1
     reward_ground_col = -5
     reward_pedestrian_hit = -10
@@ -136,6 +112,22 @@ def make_env(generate_env, concat_complex=False, record_video=False):
     else:
         env = DictToTupleWrapper(env, "rgb", ["velocity_magnitude", "steering_angle"])
     return env
+
+
+"""
+|weather_condition | Control the weather with predefined settings. | [0 - 4] | <ul> <li>0: Clear day</li> <li>1: Light rain</li><li>2:Heavy rain</li> <li>3: Light snow</li> <li>4: Storm </li> </ul> |
+|lane_number| Number of lanes. | [1- 12]||
+|road_length| Length of the road in meter. | [200-2000]||
+|night_mode| Tell if the light are activated or not. | [0-1]| <ul><li>0 : Lights off</li><li> 1: Lights on</li></ul>|
+|time| Time of the day (hour only) | [0-23]||
+|curvature| Curvature of the road. | [-1000 - 1000]||
+|starting_speed| Starting speed of the car. | [0 - 100]||
+|vehicle_types| Vehicle type. | [0 - 1]|<ul><li>0: Racing car</li><li>1: SUV</li></ul>|
+|City seed| Seed of the city. | [0 - 10000]||
+|skip_frame| Number of frame to skip. | [0 - 100]||
+|width| Desired width rendering. | [64 - 1024]||
+|height| Desired height rendering. | [64 - 1024]||
+"""
 
 
 def RaceSolo_v0(**kwargs):
@@ -229,7 +221,7 @@ def CityCars_v0(**kwargs):
         return Car_v0(dict(
             kwargs,
             lane_number=2,
-            road_length = 700,
+            road_length=700,
             task=0,
             time=random.randint(8, 17),
             city_seed=random.randint(0, 10000),
