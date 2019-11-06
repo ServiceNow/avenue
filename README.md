@@ -1,6 +1,6 @@
 # Avenue simulator
 
-![Alt text](resources/head_2.png)
+![Title Image](resources/head_2.png)
 
 Avenue is a simulator based on the Unity3D game engine designed to test reinforcement learning algorithms.
 ### Quick start
@@ -48,11 +48,11 @@ Depending on the environment used, on our laptops `env.step` requires approximat
 If you use Avenue in your research, you can cite it as follows:
 ```bibtex
 @misc{ibrahim2019avenue,
-    author = {Cyril Ibrahim, Simon Ramstedt, Christopher Pal},
-    title = {Avenue},
-    year = {2019},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/elementai/avenue}},
+    author={Ibrahim, Cyril and Ramstedt, Simon and Pal, Christopher},
+    title={Avenue},
+    year={2019},
+    publisher={GitHub},
+    journal={GitHub repository},
+    howpublished={\url{https://github.com/elementai/avenue}},
 }
 ```
