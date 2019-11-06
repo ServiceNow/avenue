@@ -25,22 +25,18 @@ for i in range(0, 1000):
 ```
 
 ### Environments
-In all environments the agent controls a car with a two-dimensional, continuous action space (target steering angle and gas/brake). The observation is a tuple containing (1) a 256x64 gray-scale image and (2) a vector containing the car's normalized velocity magnitude and its true steering angle. All environments are procedually re-generated every 10000 steps.
+<p align="left">
+  <img src="/resources/race_solo.jpg" width=48% />
+  <img src="/resources/city_pedestrians.jpg" width=48% /> 
+</p>
 
-![Alt text](resources/race_solo.jpg)
+In all environments the agent controls a car with a two-dimensional, continuous action space (target steering angle and gas/brake). The observation is a tuple containing (1) a 256x64 gray-scale image and (2) a vector containing the car's normalized velocity magnitude and its true steering angle. All environments are procedually re-generated every 10000 steps.
 
 **RaceSolo-v0** is a simple race track environment in which the agent is incentived to drive at a target speed of 45km/h (in the direction of the road). An episode terminates if the agent leaves the road or arrives at the end of the track.
 
-![Alt text](resources/race_obstacles.jpg)
-
-
 **RaceObstacles-v0** is similar to RaceSolo but with traffic cones on the race track that have to be avoided. 
 
-![Alt text](resources/city_pedestrians.jpg)
-
 **CityPedestrians-v0** is a straight avenue in an inner city environment with pedestrians crossing the street. The car is incentivized to stay on the road, avoid pedestrians and drive at the target speed of 45km/h. 
-
-![Alt text](resources/custom.jpg)
 
 **Custom environments**  can be created by changing the extensive configuration options that can be found in `avenue/envs.py`. Even though the binary is currently closed source this will allow you to change road layout and type, weather presets, time of day, traffic and more.
 
