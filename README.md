@@ -25,9 +25,9 @@ for i in range(0, 1000):
 ```
 
 ### Environments
-<p align="left">
-  <img src="/resources/race_solo.jpg" width=48% />
-  <img src="/resources/city_pedestrians.jpg" width=48% /> 
+<p align="center">
+  <img src="/resources/race_solo.jpg" width=49.5% />
+  <img src="/resources/city_pedestrians.jpg" width=49.5% /> 
 </p>
 
 In all environments the agent controls a car with a two-dimensional, continuous action space (target steering angle and gas/brake). The observation is a tuple containing (1) a 256x64 gray-scale image and (2) a vector containing the car's normalized velocity magnitude and its true steering angle. All environments are procedually re-generated every 10000 steps.
