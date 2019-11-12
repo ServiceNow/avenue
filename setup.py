@@ -14,7 +14,7 @@ setup(name='avenue',
             # "mlagents==0.5.0",
             "gym",
             # "mlagents_frozen",
-            "mlagents @ git+https://git@github.com/rmst/ml-agents-frozen@c490632b1c774ce8bc83ee1735607ae0787476d2#egg=mlagents",
+            "mlagents @ git+https://git@github.com/rmst/ml-agents-frozen@fd10e3544472b365701da2526a8262e0c8a15784#egg=mlagents",
       ],
       extras_require={},
       packages=find_packages()

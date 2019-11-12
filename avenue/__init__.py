@@ -3,7 +3,7 @@ from . import wrappers
 
 
 def make(env_name, **kwargs):
-    env = getattr(envs, env_name)(**kwargs)
+    env = getattr(envs, env_name.replace("-", "_"))(**kwargs)
     return env
 
 
