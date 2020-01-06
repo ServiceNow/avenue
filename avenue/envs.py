@@ -34,7 +34,8 @@ class Car_v0(BaseAvenue):
     _top_speed = 50
 
     def __init__(self, config):
-        super().__init__(config=dict(config, task=0))
+        defaults = dict(task=0, skip_frame=4, hd_rendering=0)
+        super().__init__(config=dict(defaults, **config))
 
     def reset(self, **kwargs):
         ob = super().reset(**kwargs)
@@ -92,14 +93,15 @@ class Car_v0(BaseAvenue):
         return s["current_waypoint"][0] > (s["num_waypoints"][0] - 5)
 
 
-def make_env(generate_env, concat_complex=False, record_video=False):
+def make_env(conf, concat_complex=False, record_video=False):
 
     if record_video:
-        generate_env = partial(generate_env, skip_frame=0, hd_rendering=1, hd_rendering_width=1920,
-                               hd_rendering_height=1024)
+        raise NotImplementedError()
+        # generate_env = partial(generate_env, skip_frame=0, hd_rendering=1, hd_rendering_width=1920,
+        #                        hd_rendering_height=1024)
 
     else:
-        generate_env = partial(generate_env, skip_frame=4, hd_rendering=0)
+        generate_env = partial(Car_v0, conf)
 
     env = RandomizedEnv(generate_env, n=10000)
     env = TimeLimit(env, max_episode_steps=1000)
@@ -131,10 +133,7 @@ def make_env(generate_env, concat_complex=False, record_video=False):
 
 
 def RaceSolo_v0(**kwargs):
-
-    def generate_env(**kwargs):
-        return Car_v0(dict(
-            kwargs,
+    defaults = dict(
             lane_number=2,
             task=0,
             time=random.randint(8, 17),
@@ -152,93 +151,82 @@ def RaceSolo_v0(**kwargs):
             layout=1,  # race track
             done_unity=1,
             starting_speed=random.randint(0, 10),
-            hd_rendering=0
-        ))
-
-    return make_env(generate_env, **kwargs)
+        )
+    return make_env(dict(defaults, **kwargs))
 
 
 def RaceObstacles_v0(**kwargs):
+    defaults = dict(
+        lane_number=2,
+        task=0,
+        time=random.randint(8, 17),
+        city_seed=random.randint(0, 10000),
+        width=256,
+        height=64,
+        night_mode=False,
+        road_type=6,
+        pedestrian_distracted_percent=random.random(),
+        pedestrian_density=0,
+        weather_condition=1,
+        no_decor=0,
+        top_speed=26,  # m/s approximately 50 km / h
+        car_number=0,
+        layout=1,  # race track
+        done_unity=1,
+        starting_speed=random.randint(0, 10),
+        nb_obstacles=200
+    )
 
-    def generate_env(**kwargs):
-        return Car_v0(dict(
-            kwargs,
-            lane_number=2,
-            task=0,
-            time=random.randint(8, 17),
-            city_seed=random.randint(0, 10000),
-            width=256,
-            height=64,
-            night_mode=False,
-            road_type=6,
-            pedestrian_distracted_percent=random.random(),
-            pedestrian_density=0,
-            weather_condition=1,
-            no_decor=0,
-            top_speed=26,  # m/s approximately 50 km / h
-            car_number=0,
-            layout=1,  # race track
-            done_unity=1,
-            starting_speed=random.randint(0, 10),
-            nb_obstacles=200
-        ))
-
-    return make_env(generate_env, **kwargs)
+    return make_env(dict(defaults, **kwargs))
 
 
 def CityPedestrians_v0(**kwargs):
+    defaults = dict(
+        lane_number=2,
+        road_length=700,
+        task=0,
+        time=random.randint(8, 17),
+        city_seed=random.randint(0, 10000),
+        width=256,
+        height=64,
+        night_mode=False,
+        road_type=0,
+        pedestrian_distracted_percent=1,
+        pedestrian_density=30,
+        weather_condition=5,
+        no_decor=0,
+        top_speed=26,  # m/s approximately 50 km / h
+        car_number=0,
+        layout=0,
+        done_unity=1,
+        starting_speed=random.randint(0, 10),
+        nb_obstacles=0
+    )
 
-    def generate_env(**kwargs):
-        return Car_v0(dict(
-            kwargs,
-            lane_number=2,
-            road_length=700,
-            task=0,
-            time=random.randint(8, 17),
-            city_seed=random.randint(0, 10000),
-            width=256,
-            height=64,
-            night_mode=False,
-            road_type=0,
-            pedestrian_distracted_percent=1,
-            pedestrian_density=30,
-            weather_condition=5,
-            no_decor=0,
-            top_speed=26,  # m/s approximately 50 km / h
-            car_number=0,
-            layout=0,
-            done_unity=1,
-            starting_speed=random.randint(0, 10),
-            nb_obstacles=0
-        ))
-
-    return make_env(generate_env, **kwargs)
+    return make_env(dict(defaults, **kwargs))
 
 
 def CityCars_v0(**kwargs):
+    defaults = dict(
+        lane_number=2,
+        road_length=700,
+        task=0,
+        time=random.randint(8, 17),
+        city_seed=random.randint(0, 10000),
+        width=256,
+        height=64,
+        night_mode=False,
+        road_type=0,  # city
+        pedestrian_distracted_percent=1,
+        pedestrian_density=30,
+        weather_condition=5,
+        no_decor=0,
+        top_speed=26,  # m/s approximately 50 km / h
+        car_number=20,
+        layout=0,  # 0 = straight road, 1 = curvy road, 2 = crossroads
+        done_unity=1,
+        starting_speed=random.randint(0, 10),
+        nb_obstacles=0
+    )
 
-    def generate_env(**kwargs):
-        return Car_v0(dict(
-            kwargs,
-            lane_number=2,
-            road_length=700,
-            task=0,
-            time=random.randint(8, 17),
-            city_seed=random.randint(0, 10000),
-            width=256,
-            height=64,
-            night_mode=False,
-            road_type=0,  # city
-            pedestrian_distracted_percent=1,
-            pedestrian_density=30,
-            weather_condition=5,
-            no_decor=0,
-            top_speed=26,  # m/s approximately 50 km / h
-            car_number=20,
-            layout=0,  # 0 = straight road, 1 = curvy road, 2 = crossroads
-            done_unity=1,
-            starting_speed=random.randint(0, 10),
-            nb_obstacles=0
-        ))
-
-    return make_env(generate_env, **kwargs)
+    return make_env(dict(defaults, **kwargs))
