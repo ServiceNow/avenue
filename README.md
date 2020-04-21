@@ -2,7 +2,8 @@
 
 ![Title Image](resources/head_2.png)
 
-Avenue is a simulator based on the Unity3D game engine designed to test reinforcement learning algorithms.
+Avenue is a simulator designed to test and prototype reinforcement learning algorithms. It is based on the Unity3D game engine. Check out the [NeurIPS '19 paper Real-Time Reinforcement Learning](https://github.com/rmst/rtrl) in which Avenue is used to compare time-constrained reinforcement learning agents.
+
 ### Quick start
 
 ```bash
